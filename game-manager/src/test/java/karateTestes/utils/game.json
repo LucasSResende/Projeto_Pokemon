@@ -1,0 +1,10 @@
+{
+  "publisherId": "<publisherId>",
+  "name": "<name>",
+  "timePlayed": {
+    "<firstDate>": "<firstTime>",
+    "<secondDate>": "<secondTime>",
+    "<thirdDate>": "<thirdTime>",
+    "<fourthDate>": "<fourthTime>"
+  }
+}
