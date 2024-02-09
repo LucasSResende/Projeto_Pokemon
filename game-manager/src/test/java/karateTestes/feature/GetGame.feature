@@ -8,46 +8,49 @@ Feature: The GET operation is the way that the user will have to list the regist
 
     When the method operation is GET
     Then status code returned is 200
-    And id != null
-    And publisherId != null
-    And name != null
+    And response[*].id != null
+    And response[*].publisherId != null
+    And response[*].name != null
     And the response.size >= 0
-
 
   Scenario Outline: Successfully when listing a game with a valid 'publisherId', then return the status code 200 OK
   and the response body with fields: id, name and publisherId.
     Given parameter provides '<publisherId>'
+    * remove game.name
+    * remove game.timePlayed
+    And request game
     * replace
       | token       | value       |
       | publisherId | publisherId |
-      | name        | name        |
     When the method operation is GET
     Then status code returned is 200
-    And id != null
-    And publisherId == '<publisherId>'
-    And name != null
+    And response[*].id != null
+    And response[*].publisherId == '<publisherId>'
+    And response[*].name != null
     And the response.size > 0
     Examples:
-      | publisherId | name           |
-      | Nintendo    | Mario          |
-      | Sega        | Sonic          |
-      | Capcom      | Residente Evil |
-      | Warner Bros | Mortal Kombat  |
+      | publisherId |
+      | Nintendo    |
+      | Sega        |
+      | Capcom      |
+      | Warner Bros |
 
 
   Scenario Outline: Successfully when listing a game with a invalid 'publisherId', then return the status code 200 OK
   and the response body with fields: id, name and publisherId.
     Given parameter provides '<publisherId>'
+    * remove game.name
+    * remove game.timePlayed
+    And request game
     * replace
       | token       | value       |
       | publisherId | publisherId |
-      | name        | name        |
     When the method operation is GET
     Then status code returned is 200
     And response ==[]
     Examples:
-      | publisherId | name           |
-      | -----       | Mario          |
-      | ****        | Sonic          |
-      |             | Residente Evil |
-      | 987654      | Mortal Kombat  |
+      | publisherId |
+      | -----       |
+      | ****        |
+      |             |
+      | 987654      |
