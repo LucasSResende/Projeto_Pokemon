@@ -25,6 +25,5 @@ public class GameController {
             return gameService.getAllGames(publisherId, pageable);
         }
         return gameService.getAllGames(pageable);
-
     }
 }

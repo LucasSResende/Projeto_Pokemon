@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class GameService {
     private final GameRepository gameRepository;
 
-
     @Autowired
     public GameService(GameRepository gameRepository) {
         this.gameRepository = gameRepository;

@@ -2,7 +2,6 @@ package br.inatel.gameproject.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -20,13 +19,6 @@ public class GameDTO {
     @NotNull
     private Map<LocalDate, Integer> timePlayed;
 
-    @Autowired
-    public GameDTO() {
-        this.id = id;
-        this.publisherId = publisherId;
-        this.name = name;
-        this.timePlayed = timePlayed;
-    }
 
     public UUID getId() {
         return id;
