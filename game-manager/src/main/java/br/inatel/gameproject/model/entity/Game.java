@@ -20,8 +20,9 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String name;
     private String publisherId;
+    private String name;
+
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "game_id")
