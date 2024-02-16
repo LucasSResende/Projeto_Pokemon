@@ -19,7 +19,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GameDTO {
     private UUID id;
-
     @NotBlank(message = "PublisherId can not be empty")
     private String publisherId;
     @Size(max = 40, message = "Name can not exceeded 40 characters")
@@ -29,5 +28,4 @@ public class GameDTO {
             @Min(value = 0, message = "Hour must be a positive integer")
             @Max(value = 24, message = "Hour can not exceeded 24")
                     Integer> timePlayed;
-
 }

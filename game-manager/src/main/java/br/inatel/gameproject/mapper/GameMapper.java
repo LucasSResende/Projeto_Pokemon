@@ -21,12 +21,12 @@ public class GameMapper {
                 .build();
 
         if (gameDTO.getTimePlayed() != null && !gameDTO.getTimePlayed().isEmpty()) {
-            gameDTO.getTimePlayed().forEach((date, hour) -> {
-                game.addTimePlayed(TimePlayed.builder()
-                        .timeDate(date)
-                        .timeHour(hour)
-                        .build());
-            });
+            gameDTO.getTimePlayed().forEach((date, hour) ->
+                    game.addTimePlayed(TimePlayed.builder()
+                            .timeDate(date)
+                            .timeHour(hour)
+                            .build())
+            );
         }
         return game;
     }
