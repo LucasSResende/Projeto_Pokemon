@@ -9,13 +9,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Table
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class TimePlayed {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

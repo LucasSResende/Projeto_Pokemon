@@ -1,18 +1,19 @@
 package br.inatel.gameproject.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode(of = "id")
 @Builder
 
 public class Game {
