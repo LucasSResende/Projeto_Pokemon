@@ -1,4 +1,4 @@
-FROM openjdk:17-oracle
+FROM openjdk:17
 
 EXPOSE 8081
 ARG JAR_FILE=target/*.jar
