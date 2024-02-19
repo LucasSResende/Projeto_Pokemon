@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("publishermanagercache")
+@RequestMapping("publishermanagercache")//[Adauto] - With this request mapping your cache will never be cleared, please check documentation
 public class PublisherManagerController {
 
     private final PublisherManagerService publisherManagerService;

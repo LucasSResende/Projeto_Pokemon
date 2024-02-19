@@ -29,7 +29,7 @@ public class PublisherManagerService {
     @Value("${server.port}")
     private String port;
 
-    @Cacheable(cacheNames = "publishermanagercache")
+    @Cacheable(cacheNames = "publishermanagercache")//[Adauto] - Why the cache name is the same as cache request mapping?
     public List<PublisherDTO> getAllPublishers() {
         try {
             PublisherDTO[] publishers = WebClient.create("http://"
@@ -40,6 +40,16 @@ public class PublisherManagerService {
                     .retrieve()
                     .bodyToMono(PublisherDTO[].class)
                     .block();
+
+            /*
+                [Adauto] - This kind of validation must be made as a conditional or be removed.
+                Using assertions like this can make you application throw an AssertionError there are
+                meant to indicate unrecoverable conditions and the best practice is never try to
+                handle them. Therefore, you can assume that publisher-manager always return a
+                successful response even in cases where you don't have any Publisher registered
+                (in this case an empty list will be returned). In this scenario, cases where
+                publisher-manager will throw an error will be handled as WebClientException.
+             */
             assert publishers != null;
             return Arrays.asList(publishers);
         } catch (WebClientException e) {
@@ -52,7 +62,7 @@ public class PublisherManagerService {
             NotificationDTO notificationDTO = NotificationDTO.builder()
                     .host(this.host)
                     .port(this.port).build();
-            WebClient webClient = WebClient
+            WebClient webClient = WebClient //[Adauto] - Since you are using the same WebClient twice, it must be created at the class scope to be used in its methods.
                     .builder()
                     .baseUrl("http://"
                             + this.publisherManagerHost + ":"

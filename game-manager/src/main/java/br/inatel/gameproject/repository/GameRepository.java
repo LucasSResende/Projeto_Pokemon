@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GameRepository extends JpaRepository<Game, String> {
+public interface GameRepository extends JpaRepository<Game, String> {//[Adauto] - Your game entity has id as UUID and not String
     List<Game> findByPublisherId(String publisherId);
 
 }

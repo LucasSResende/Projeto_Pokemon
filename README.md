@@ -75,6 +75,7 @@ What I used to development the project:</p>
 <h3> Running the application:</h3>
 Use the following command to clone the project:
 
+[Adauto] - The command below is incomplete.
 ```bash
 $ https://github.com/LucasSResende/Project1_IDP.git
 ```
@@ -148,6 +149,7 @@ To clean cache:
 To clean the cache of my application, an API call
 is made automatically by the external API when a publisher is created.
 
+[Adauto] - You don't need to document endpoint from another project. The project document already does it.
 Endpoints of port 8080 (Publisher Manager)
 
 To read all publishers:
