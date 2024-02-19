@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.net.URI;
 
 @RestControllerAdvice
-public class RestExceptionHandler {
+public class RestExceptionHandler {//[Adauto] - Some exceptions are missing here
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {

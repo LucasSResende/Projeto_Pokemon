@@ -26,7 +26,7 @@ public class GameController {
     }
 
     @PostMapping
-    public ResponseEntity<GameDTO> postGame(@Valid @RequestBody GameDTO gameDTO) {
+    public ResponseEntity<GameDTO> postGame(@Valid @RequestBody GameDTO gameDTO) {//[Adauto] - Replace the term 'post' to something meaningful related to the purpose of the method. Post is just the HTTP verb used in the request.
         return new ResponseEntity<>(gameService.postGame(gameDTO), HttpStatus.CREATED);
     }
 }
