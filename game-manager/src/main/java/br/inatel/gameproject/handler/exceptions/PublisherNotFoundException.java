@@ -1,7 +1,7 @@
 package br.inatel.gameproject.handler.exceptions;
 
 public class PublisherNotFoundException extends RuntimeException {
-    public PublisherNotFoundException(String publisherId) {
+    public PublisherNotFoundException() {
         super("PublisherId was not found.");
     }
 }

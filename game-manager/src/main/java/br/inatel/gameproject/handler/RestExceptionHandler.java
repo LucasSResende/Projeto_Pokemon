@@ -49,7 +49,7 @@ public class RestExceptionHandler {
     public ProblemDetail handlerWithPublisherConnectionException(PublisherManagerConnectionException e) {
         ProblemDetail error = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         error.setTitle("Database Connection Failed");
-        error.setType(URI.create("JDBCConnectionException"));
+        error.setType(URI.create("PublisherManagerConnectionException"));
         error.setStatus(HttpStatus.SERVICE_UNAVAILABLE);
         return error;
     }

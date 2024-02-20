@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("publishermanagercache")
+@RequestMapping("publishercache")
 public class PublisherManagerController {
 
     private final PublisherManagerService publisherManagerService;

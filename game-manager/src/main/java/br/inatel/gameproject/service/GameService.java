@@ -21,14 +21,14 @@ public class GameService {
         this.publisherManagerService = publisherManagerService;
     }
 
-    public GameDTO postGame(GameDTO gameDTO) {
+    public GameDTO createGame(GameDTO gameDTO) {
         if (isPublisherValid(gameDTO.getPublisherId())) {
             return GameMapper.gameToGameDTO(gameRepository.save(GameMapper.gameDTOToGame(gameDTO)));
         }
-        throw new PublisherNotFoundException(gameDTO.getPublisherId());
+        throw new PublisherNotFoundException();
     }
 
-    public List<GameDTO> getGames(String publisherId) {
+    public List<GameDTO> listGames(String publisherId) {
         return (publisherId != null)
                 ? GameMapper.gameListToGameDTOList(gameRepository.findByPublisherId(publisherId))
                 : GameMapper.gameListToGameDTOList(gameRepository.findAll());

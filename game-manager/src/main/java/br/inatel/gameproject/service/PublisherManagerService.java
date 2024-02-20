@@ -3,6 +3,7 @@ package br.inatel.gameproject.service;
 import br.inatel.gameproject.handler.exceptions.PublisherManagerConnectionException;
 import br.inatel.gameproject.model.dto.NotificationDTO;
 import br.inatel.gameproject.model.dto.PublisherDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PublisherManagerService {
 
     @Value("${publisher.manager.host}")
@@ -29,7 +31,9 @@ public class PublisherManagerService {
     @Value("${server.port}")
     private String port;
 
-    @Cacheable(cacheNames = "publishermanagercache")
+    private WebClient webClient;
+
+    @Cacheable(cacheNames = "cache")
     public List<PublisherDTO> getAllPublishers() {
         try {
             PublisherDTO[] publishers = WebClient.create("http://"
@@ -40,7 +44,6 @@ public class PublisherManagerService {
                     .retrieve()
                     .bodyToMono(PublisherDTO[].class)
                     .block();
-            assert publishers != null;
             return Arrays.asList(publishers);
         } catch (WebClientException e) {
             throw new PublisherManagerConnectionException();
@@ -52,13 +55,13 @@ public class PublisherManagerService {
             NotificationDTO notificationDTO = NotificationDTO.builder()
                     .host(this.host)
                     .port(this.port).build();
-            WebClient webClient = WebClient
+            webClient = WebClient
                     .builder()
                     .baseUrl("http://"
                             + this.publisherManagerHost + ":"
                             + this.publisherManagerPort).build();
 
-            return webClient.post()
+            return this.webClient.post()
                     .uri("/notification")
                     .body(BodyInserters.fromValue(notificationDTO))
                     .retrieve()
@@ -69,9 +72,9 @@ public class PublisherManagerService {
         }
     }
 
-    @CacheEvict(cacheNames = "publishermanagercache")
+    @CacheEvict(cacheNames = "cache")
     public void deletePublisherCache() {
-        throw new PublisherManagerConnectionException();
+        log.info("Deleted cache");
     }
 
 }
