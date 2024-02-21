@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -86,56 +86,54 @@ class GameServiceTest {
         assertEquals("PublisherId was not found.", invalidPublisher.getMessage());
     }
 
-
     @Test
     @DisplayName("When games are requested for a valid publisher ID, it should return the games of that publisher")
     void givenValidPublisherId_whenGetGamesIsCalled_thenReturnGamesOfThatPublisher() {
 
-        GameDTO gameDTO2 = GameDTO.builder()
-                .publisherId("microsoft")
-                .name("Forza Horizon 5")
-                .timePlayed(Map.of(LocalDate.of(2023, 12, 1), 15,
-                        LocalDate.of(2023, 1, 1), 16,
-                        LocalDate.of(2024, 2, 3), 17,
-                        LocalDate.of(2024, 2, 9), 18))
-                .build();
+        List<Game> games = Arrays.asList(
+                new Game(UUID.randomUUID(), "PlayStation", "Naughty Dog", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "microsoft", "Forza Horizon 5", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "microsoft", "Minecraft", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "Ubisoft", "Prince if Persia", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "Ubisoft", "Assassin's Creed", new ArrayList<>())
+        );
+        when(gameRepository.findByPublisherId(gameDTO.getPublisherId()))
+                .thenReturn(games
+                        .stream().filter(g -> (game.getPublisherId()).equals(g.getPublisherId()))
+                        .collect(Collectors.toList()));
 
-        Game game2 = Mockito.mock(Game.class);
+        List<GameDTO> result = gameService.listGames(game.getPublisherId());
 
-        when(game2.getPublisherId()).thenReturn("microsoft");
-        when(game2.getName()).thenReturn("Forza Horizon 5");
-
-        when(gameRepository.findByPublisherId(anyString()))
-                .thenReturn(Arrays.asList(game, game2));
-
-        List<GameDTO> result = gameService.listGames(gameDTO.getPublisherId());
-
+        result.forEach(gameDTO -> assertEquals(game.getPublisherId(), gameDTO.getPublisherId()));
         assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(game -> game.getName().equals(gameDTO.getName())));
-        assertTrue(result.stream().anyMatch(game -> game.getName().equals(gameDTO2.getName())));
-
-        verify(gameRepository, times(1)).findByPublisherId(gameDTO.getPublisherId());
     }
 
     @Test
     @DisplayName("When games are requested without a publisher ID, it should return all games")
     void givenNoPublisherId_whenGetGamesIsCalled_thenReturnAllGames() {
-        Game game2 = Mockito.mock(Game.class);
+        List<Game> games = Arrays.asList(
+                new Game(UUID.randomUUID(), "PlayStation", "Naughty Dog", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "microsoft", "Forza Horizon 5", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "microsoft", "Minecraft", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "Ubisoft", "Prince if Persia", new ArrayList<>()),
+                new Game(UUID.randomUUID(), "Ubisoft", "Assassin's Creed", new ArrayList<>())
+        );
 
-        when(game2.getPublisherId()).thenReturn("microsoft");
-        when(game2.getName()).thenReturn("Forza Horizon 5");
-
-        when(gameRepository.findAll()).thenReturn(Arrays.asList(game, game2));
+        when(gameRepository.findAll()).thenReturn(games);
 
         List<GameDTO> result = gameService.listGames(null);
 
-        assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(game -> game.getName().equals(gameDTO.getName())));
-        assertTrue(result.stream().anyMatch(game -> game.getName().equals("Forza Horizon 5")));
+        assertNotNull(result);
+        assertEquals(games.size(), result.size());
 
-        verify(gameRepository, times(1)).findAll();
+        for (GameDTO gameDTO : result) {
+            assertTrue(games.stream().anyMatch(game -> game
+                    .getName()
+                    .equals(gameDTO.getName()) && game
+                    .getPublisherId()
+                    .equals(gameDTO.getPublisherId())));
+        }
     }
-
 
     @Test
     @DisplayName("When a valid publisher ID is checked for validity, it should return true")
