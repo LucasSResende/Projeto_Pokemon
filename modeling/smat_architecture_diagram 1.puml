@@ -1,0 +1,33 @@
+@startuml
+title "SMAT - Series Management Tool \nArchitecture Diagram"
+scale 5
+
+!define FONTSIZE 16
+!define FONTSTYLE class
+
+rectangle ExternalAccess as us
+Cloud OMDB as api
+
+
+rectangle "Docker" {
+    database MySQL as my
+    rectangle "SMAT - Series Management Tool" {
+    [SeriesController] as sctrl
+    [SeriesService] as sser
+    [SeriesRepository] as srep
+    [OmdbService] as apiser
+    [ScheduledCacheClean] as apictrl
+    }
+}
+
+us ---> sctrl: /series \nGET, POST, DELETE
+sctrl ---> sser: Operate Series
+sser ---> srep: Operate Series
+srep ---> my: SQL Operations
+
+sser ---> apiser: Get Series on API\n(cached)
+apiser ---> api: Get Series on API
+
+apictrl ---> apiser: Delete Cache \nEach x seconds
+
+@enduml

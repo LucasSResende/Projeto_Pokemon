@@ -1,0 +1,14 @@
+@startuml
+title Deployment Diagram
+
+actor "User" as user
+node "game-manager" as GM
+node "publisher-manager API" as PM
+
+database "MySQL" as MYSQL
+
+user --> GM : /game (GET,\n GETByPublisherId,\n POST)
+GM --> PM : /publisher-manager\n (POST, GET)
+GM --> MYSQL : database\n operation
+
+@enduml

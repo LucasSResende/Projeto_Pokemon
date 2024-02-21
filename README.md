@@ -1,5 +1,7 @@
 <h1 align="center"> Project 1 - IDP - Game Manager</h1>
 
+# PreRequisites:
+
 You need to install the following technology:
 
 <div align="left">
@@ -10,39 +12,55 @@ You need to install the following technology:
 
 ---
 
-## About the Project
+## Introduction
 
 This is the first IDP project with closed scope. The project consists of a game manager,
 in which the user can save and list games. The target audience for this project is all
-users who like games and want to better manager their time played.
+users who like games and want to better manage their time played.
 
 In this project I used the  [Mysql](https://hub.docker.com/_/mysql)
 and [adautomendes/publisher-manager](https://hub.docker.com/r/adautomendes/publisher-manager) containers,
-and some knowledge acquired in alura courses.
+and some knowledge acquired in alura courses:
+
+- Git;
+- API Rest;
+- Spring boot;
+- JPA persistence;
+- Unit tests;
+- Mock;
+- Docker;
+- And any other knowledge like algorithms and logical.
+
 ---
 
 ## Diagrams
 
-1. The following operation diagram shows the macro vision of distribution of the microservices
+1. The following operation diagram shows the macro vision of distribution working of the microservices
+
+<h1 align="center">
+    <img align="center" src="modeling/DeploymentDiagram.png"/>
+</h1> 
+
+- The following operation diagram shows a general vision of distribution of the microservices
 
 <h1 align="center">
     <img align="center" src="modeling/OperationDiagram-Operation_Diagram.png" width="500px"/>
 </h1> 
 The user can perform three operations: 
 
-- Read all games in database, following the next sequence diagram:
+- Read all games in database, according to the following sequence diagram:
 
 <h1 align="center">
     <img align="center" src="modeling/SequenceDiagramGetAll.png" width="500px"/>
 </h1>
 
-- Read only games specified by publisherId, following the next sequence diagram:
+- Read only games specified by publisherId, according to the following sequence diagram:
 
 <h1 align="center">
     <img align="center" src="modeling/SequenceDiagramGetByPublisher.png" width="500px"/>
 </h1>
 
-- Save a new game in database, following the next sequence diagram:
+- Save a new game in database, according to the next sequence diagram:
 
 <h1 align="center">
     <img align="center" src="modeling/SequenceDiagramPost.png" width="500px"/>
@@ -52,7 +70,7 @@ The user can perform three operations:
 
 ## Technologies
 
-What I used to development the project:</p>
+What I used to develop the project:</p>
 
 <div align="left">
 
@@ -70,22 +88,22 @@ What I used to development the project:</p>
 
 ---
 
-## Project
+## Steps to run the Project
 
 <h3> Running the application:</h3>
-Use the following command to clone the project:
+Use the following command to clone the project on terminal of your choice in some folder to use:
 
 ```bash
-$ https://github.com/LucasSResende/Project1_IDP.git
+$ git clone https://github.com/LucasSResende/Project1_IDP.git
 ```
 
-To build the project, use this command:
+To build the project, use this command on terminal in the folder where the project was cloned:
 
 ```bash
 $ mvn clean install -DskipTests
 ```
 
-Then enter the Ubuntu terminal, in the same directory where the pom file is present.
+Then enter the terminal where working Docker, in the same directory where the pom file is present.
 And start the application container with the following command:
 
 ```bash
@@ -96,17 +114,17 @@ $ docker-compose up --build
 
 # End-Points
 
-Endpoints of port 8081 (Game Manager)
+## Endpoints of Request
 
-To read all games:
+Read all games:
 `GET  http://localhost:8081/game`
 
-To read games by publisherId:
+Read games by publisherId:
 `GET  http://localhost:8081/game?publisherId={publisherId}`
 
 It is necessary to use a valid publisherId in the URL;
 
-To register a new timePlayed with games:
+Register a new timePlayed with games:
 `POST  http://localhost:8081/game`
 
 -The input payload for creating a timePlayed with games needs to follow these example:
@@ -125,7 +143,9 @@ To register a new timePlayed with games:
 }
 ```
 
-After save game, an output will be return following these example:
+## Endpoint of Response
+
+After save game, an output on platform used will be return following these example:
 
 ```bash
 {
@@ -142,25 +162,10 @@ After save game, an output will be return following these example:
 }
 ```
 
-To clean cache:
+## Cleaning the CACHE
+
+Clean cache:
 `DELETE  http://localhost:8081/publishermanagercache`
 
 To clean the cache of my application, an API call
 is made automatically by the external API when a publisher is created.
-
-Endpoints of port 8080 (Publisher Manager)
-
-To read all publishers:
-`GET  http://localhost:8080/publisher`
-
-To register a new publisher:
-`POST  http://localhost:8080/publisher`
-
-The payload for creating a publisher follows the example:
-
-```bash
-{
-  "id": "microsoft",
-  "name": "Microsotf company"
-}
-```
