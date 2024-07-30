@@ -50,6 +50,11 @@ public class PublisherManagerService {
         }
     }
 
+    @CacheEvict(cacheNames = "cache")
+    public void deletePublisherCache() {
+        log.info("Deleted cache");
+    }
+
     public NotificationDTO[] sendPublisherManagerNotification() {
         try {
             NotificationDTO notificationDTO = NotificationDTO.builder()
@@ -72,9 +77,5 @@ public class PublisherManagerService {
         }
     }
 
-    @CacheEvict(cacheNames = "cache")
-    public void deletePublisherCache() {
-        log.info("Deleted cache");
-    }
 
 }

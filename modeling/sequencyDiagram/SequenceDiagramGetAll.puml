@@ -1,0 +1,20 @@
+@startuml
+
+actor User as user
+participant "GameController" as GC
+participant "GameService" as GS
+participant "GameRepository" as GR
+database "MySQL" as mysql
+
+user -> GC: GET\n/game
+GC -> GS: getAllGames
+GS -> GR: showGames
+GR -> mysql: Search
+
+GR <-- mysql: OK
+GS <-- GR: OK
+GC <-- GS: OK
+user <-- GC: 200 OK \n [Games listed\n or an empty list]
+
+
+@enduml

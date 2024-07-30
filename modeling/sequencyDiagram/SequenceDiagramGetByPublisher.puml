@@ -1,0 +1,22 @@
+@startuml
+
+actor User as user
+participant "GameController" as GC
+participant "GameService" as GS
+participant "GameRepository" as GR
+database "MySQL" as mysql
+
+
+user -> GC: GET\n/game?publisherId=microsoft
+GC -> GS: getGameByPublisherId
+GS -> GR: showGamesByPublisherId
+GR -> mysql: Search
+
+
+GR <-- mysql: OK
+GS <-- GR: OK
+GC <-- GS: OK
+user <-- GC: 200 OK [ \n [Games by publisherID\n listed or an empty list]
+
+
+@enduml

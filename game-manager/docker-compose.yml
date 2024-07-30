@@ -47,7 +47,7 @@ services:
       context: ./
       dockerfile: ./Dockerfile
       args:
-        JAR_FILE: target/game-manager-0.0.1-SNAPSHOT.jar
+        JAR_FILE: target/game-0.0.1-SNAPSHOT.jar
     container_name: game-manager
     ports:
       - 8081:8081

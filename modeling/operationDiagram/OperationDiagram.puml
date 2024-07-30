@@ -1,0 +1,34 @@
+@startuml
+title Operation Diagram
+
+node "Platform" as PT
+node "publisher-manager" as PM
+node "game-manager"{
+    [PublisherManagerService]
+    [PublisherManagerController]
+    [NotificationListener]
+    [GameController]
+    [GameService]
+    [GameRepository]
+
+}
+database "PublisherDB" as PDB
+database "MySQL" as MSQL
+
+
+PT --> [GameController] : /game\n (Postman)
+PT --> PM : /publisher\n (Postman)
+[GameController] --> [GameService] : createGame, readGame
+[GameService] --> [GameRepository] : Save / SearchALL / SearchByPublisher
+[GameService] --> [PublisherManagerService] : Fetch Publisher List
+[GameService] --> [GameService] : validatePublisher
+[GameService] <-- [PublisherManagerService] : Publisher List
+[NotificationListener] --> [PublisherManagerService] : notify (host/port)
+[PublisherManagerService] --> PM : Notify /  Search publisher
+[GameRepository] --> [MSQL]: Acess (INSERT / SELECT)
+PM --> [PDB]: Access (INSERT)
+[PublisherManagerService] <-- [PublisherManagerController] : cacheCleanup
+PM ---> [PublisherManagerController]: cacheVerify
+PM -> [PublisherManagerService] : response
+
+@enduml

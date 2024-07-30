@@ -81,7 +81,7 @@ Feature: The POST operation is responsible for the user to create a game that ha
       | 987654      | Mortal Kombat |
 
   Scenario: Unsuccessfully when creating a game null 'publisherId', then return the status code 400 BAD REQUEST and returned
-  a publisherId field exception message.
+  a publisherId field exception message (Group with errors).
     Given param publisherId = null
     * remove game.timePlayed
     And request game
@@ -123,7 +123,6 @@ Feature: The POST operation is responsible for the user to create a game that ha
       | fourthTime  | fourthTime  |
     And request game
     When method POST
-    And karate.log(response)
     Then status 400
     And match response.detail contains 'Hour can not exceeded 24'
     Examples:

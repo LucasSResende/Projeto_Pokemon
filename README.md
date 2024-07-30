@@ -44,7 +44,7 @@ and some knowledge acquired in alura courses:
 - The following operation diagram shows a general vision of distribution of the microservices
 
 <h1 align="center">
-    <img align="center" src="modeling/OperationDiagram-Operation_Diagram.png" width="500px"/>
+    <img align="center" src="modeling/OperationDiagram.png" width="500px"/>
 </h1> 
 The user can perform three operations: 
 

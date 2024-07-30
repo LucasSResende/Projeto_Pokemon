@@ -1,7 +1,7 @@
 Feature: The GET operation is the way that the user will have to list the registered games, and the way to list:
   By all games and only by publisherId and will show all user-created fields in the POST operation for that game.
   getAllGames: lists all registered games, regardless of publisherId.
-  GetGamesByPublisherId: Lists only the games of the identified publisherId.
+  GetGamesByPublisherId: Lists only the games of the identified publisherId. (Test def read 8th line)
 
   Background:
     * url 'http://localhost:8081'
@@ -9,7 +9,6 @@ Feature: The GET operation is the way that the user will have to list the regist
     * def postGame = callonce read('classpath:karateTests/features/PostGame.feature@BaseCreation')
     And header Content-Type = 'application/json'
     Given path '/game'
-
 
   Scenario: Successfully listing all games, return the 200 OK code and response body with the fields created by the
   user in the POST operation.

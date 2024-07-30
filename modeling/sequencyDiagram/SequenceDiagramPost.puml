@@ -1,0 +1,32 @@
+
+@startuml
+
+actor User as user
+participant "GameController" as GC
+participant "GameService" as GS
+participant "PublisherManagerService" as PS
+participant "GameRepository" as GR
+database "MySQL" as mysql
+
+user -> GC: POST\n/game
+GC -> GS: createGame
+GS -> PS: Validate Publisher
+
+group Alt
+group Valid
+GS <-- PS: OK
+GS -> GR: saveGame
+GR -> mysql: Save
+GR <-- mysql: GameInfo
+GS <-- GR: GameInfo
+GC <-- GS: GameInfo
+user <-- GC: Created Game (201 Created)
+end
+
+group Invalid
+GS <-- PS: NOK
+GC <-- GS: Exception
+user <-- GC: Publisher Not Found (400 Bad Request)
+end
+end
+@enduml
