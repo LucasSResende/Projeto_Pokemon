@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "game-manager.fullname" . }}
+  labels:
+    app: {{ include "game-manager.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "game-manager.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "game-manager.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
+            - name: GAME_MANAGER_HOST
+              value: "{{ .Values.env.GAME_MANAGER_HOST }}"
+            - name: GAME_MANAGER_PORT
+              value: "{{ .Values.env.GAME_MANAGER_PORT }}"
+            - name: PUBLISHER_MANAGER_HOST
+              value: "{{ .Values.env.PUBLISHER_MANAGER_HOST }}"
+            - name: PUBLISHER_MANAGER_PORT
+              value: "{{ .Values.env.PUBLISHER_MANAGER_PORT }}"
+            - name: MYSQL_CONTAINER
+              value: "{{ .Values.env.MYSQL_CONTAINER }}"
+            - name: MYSQL_PORT
+              value: "{{ .Values.env.MYSQL_PORT }}"

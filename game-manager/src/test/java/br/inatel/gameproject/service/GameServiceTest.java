@@ -64,12 +64,12 @@ class GameServiceTest {
 
     @Test
     @DisplayName("When a game is posted with a valid publisher, it should be successfully created and returned")
-    void givenValidPublisher_whenPostGameIsCalled_thenReturnCreatedGame() {
+    void givenValidPublisher_whenCreateGameIsCalled_thenReturnCreatedGame() {
 
         when(publisherManagerService.getAllPublishers())
                 .thenReturn(List.of(new PublisherDTO("microsoft", "Microsoft Company")));
         when(gameRepository.save(any(Game.class))).thenReturn(game);
-        GameDTO result = gameService.postGame(gameDTO);
+        GameDTO result = gameService.createGame(gameDTO);
         assertEquals(gameDTO.getPublisherId(), result.getPublisherId());
         assertEquals(gameDTO.getName(), result.getName());
         assertEquals(gameDTO.getTimePlayed(), result.getTimePlayed());
@@ -78,20 +78,20 @@ class GameServiceTest {
 
     @Test
     @DisplayName("When a game is posted with an invalid publisher, it should throw a PublisherNotFoundException")
-    void givenInvalidPublisher_whenPostGameIsCalled_thenThrowPublisherNotFoundException() {
+    void givenInvalidPublisher_whenCreateGameIsCalled_thenThrowPublisherNotFoundException() {
         gameDTO = GameDTO.builder().publisherId("Invalid").build();
         PublisherNotFoundException invalidPublisher = assertThrows(PublisherNotFoundException.class,
-                () -> gameService.postGame(gameDTO));
+                () -> gameService.createGame(gameDTO));
         assertEquals("PublisherId was not found.", invalidPublisher.getMessage());
     }
 
 
     @Test
     @DisplayName("When games are requested for a valid publisher ID, it should return the games of that publisher")
-    void givenValidPublisherId_whenGetGamesIsCalled_thenReturnGamesOfThatPublisher() {
+    void givenValidPublisherId_whenGetGamesIsCalled_thenReturnAllGamesOfThatPublisher() {
         when(gameRepository.findByPublisherId(anyString()))
                 .thenReturn(Collections.singletonList(game));
-        List<GameDTO> result = gameService.getGames(gameDTO.getPublisherId());
+        List<GameDTO> result = gameService.getAllGames(gameDTO.getPublisherId());
         assertEquals(1, result.size());
         assertEquals(gameDTO.getName(), result.get(0).getName());
         verify(gameRepository, times(1)).findByPublisherId(gameDTO.getPublisherId());
@@ -99,9 +99,9 @@ class GameServiceTest {
 
     @Test
     @DisplayName("When games are requested without a publisher ID, it should return all games")
-    void givenNoPublisherId_whenGetGamesIsCalled_thenReturnAllGames() {
+    void givenNoPublisherId_whenGetGamesIsCalled_thenReturnAllAllGames() {
         when(gameRepository.findAll()).thenReturn(Collections.singletonList(game));
-        List<GameDTO> result = gameService.getGames(null);
+        List<GameDTO> result = gameService.getAllGames(null);
         assertEquals(1, result.size());
         assertEquals(gameDTO.getName(), result.get(0).getName());
         verify(gameRepository, times(1)).findAll();

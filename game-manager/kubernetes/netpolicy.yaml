@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-same-namespace
+  namespace: deploy-game-manager
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql  # Certifique-se de que esse label corresponde ao do seu pod MySQL
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: deploy-game-manager
+      ports:
+        - protocol: TCP
+          port: 3306

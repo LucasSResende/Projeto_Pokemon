@@ -48,7 +48,7 @@ class GameControllerTest {
 
     @Test
     @DisplayName("Return the created game")
-    void givenGame_whenPostGameIsCalled_thenReturnCreatedGame() {
+    void givenGame_whenCreateGameIsCalled_thenReturnCreatedGame() {
         List<GameDTO> response = webTestClient.post()
                 .uri("/game")
                 .body(BodyInserters.fromValue(gameDTO))
@@ -67,7 +67,7 @@ class GameControllerTest {
 
     @Test
     @DisplayName("Return a list of games")
-    void givenPublisherId_whenGetGamesIsCalled_thenReturnListOfGames() {
+    void givenPublisherId_whenGetGamesIsCalled_thenReturnListOfAllGames() {
         List<GameDTO> response = webTestClient.get()
                 .uri("/game?publisherId=microsoft")
                 .exchange()

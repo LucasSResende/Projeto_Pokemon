@@ -21,12 +21,12 @@ public class GameController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GameDTO>> getGames(@RequestParam(required = false) String publisherId) {
-        return ResponseEntity.ok(gameService.getGames(publisherId));
+    public ResponseEntity<List<GameDTO>> getAllGames(@RequestParam(required = false) String publisherId) {
+        return ResponseEntity.ok(gameService.getAllGames(publisherId));
     }
 
     @PostMapping
-    public ResponseEntity<GameDTO> postGame(@Valid @RequestBody GameDTO gameDTO) {
-        return new ResponseEntity<>(gameService.postGame(gameDTO), HttpStatus.CREATED);
+    public ResponseEntity<GameDTO> createGame(@Valid @RequestBody GameDTO gameDTO) {
+        return new ResponseEntity<>(gameService.createGame(gameDTO), HttpStatus.CREATED);
     }
 }

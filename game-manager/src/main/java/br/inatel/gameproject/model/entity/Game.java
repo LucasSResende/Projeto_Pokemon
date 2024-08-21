@@ -25,7 +25,6 @@ public class Game {
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "game_id")
     private List<TimePlayed> timePlayed = new ArrayList<>();
 
     public void addTimePlayed(TimePlayed timePlayedOfGame) {
