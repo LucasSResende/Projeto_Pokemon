@@ -6,7 +6,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: mysql  # Certifique-se de que esse label corresponde ao do seu pod MySQL
+      app: mysql
   policyTypes:
     - Ingress
   ingress:

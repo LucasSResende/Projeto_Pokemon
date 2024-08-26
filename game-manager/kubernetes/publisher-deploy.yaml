@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: publisher-manager
+  name: publisher-manager-deployment
   labels:
     app: publisher-manager
 spec:
@@ -20,13 +20,15 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: SERVER_HOST
-              value: "publisher-manager"
-            - name: SERVER_PORT
-              value: "8080"
-            - name: MYSQL_HOST
-              value: "mysql"
-            - name: MYSQL_PORT
-              value: "3306"
             - name: SPRING_PROFILES_ACTIVE
-              value: "prod"
+              value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
+            - name: GAME_MANAGER_PORT
+              value: "{{ .Values.env.GAME_MANAGER_PORT }}"
+            - name: PUBLISHER_MANAGER_HOST
+              value: publisher-manager
+            - name: PUBLISHER_MANAGER_PORT
+              value: "8080"
+            - name: MYSQL_CONTAINER
+              value: "{{ .Values.env.MYSQL_CONTAINER }}"
+            - name: MYSQL_PORT
+              value: "{{ .Values.env.MYSQL_PORT }}"

@@ -23,7 +23,7 @@ spec:
             - name: GAME_MANAGER_PORT
               value: "{{ .Values.env.GAME_MANAGER_PORT }}"
             - name: PUBLISHER_MANAGER_HOST
-              value: publisher-manager
+              value: "{{ .Values.env.PUBLISHER_MANAGER_PORT }}"
             - name: PUBLISHER_MANAGER_PORT
               value: "8080"
             - name: MYSQL_CONTAINER

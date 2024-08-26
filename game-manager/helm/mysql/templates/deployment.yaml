@@ -36,3 +36,5 @@ spec:
               value: "{{ .Values.env.MYSQL_PORT }}"
             - name: MYSQL_ROOT_PASSWORD
               value: "{{ .Values.env.MYSQL_ROOT_PASSWORD}}"
+            - name: MYSQL_ROOT_USERNAME
+              value: "{{ .Values.env.MYSQL_ROOT_USERNAME}}"
