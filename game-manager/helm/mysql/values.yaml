@@ -1,0 +1,20 @@
+replicaCount: 1
+image:
+  repository: mysql
+  tag: 8.0.29
+service:
+  type: ClusterIP
+  port: 3306
+  targetPort: 3306
+env:
+  SPRING_PROFILES_ACTIVE: prod
+  GAME_MANAGER_PORT: "8080"
+  GAME_MANAGER_HOST: localhost
+  MYSQL_CONTAINER: "mysql"
+  MYSQL_PORT: "3306"
+  MYSQL_ROOT_PASSWORD: "root"
+  PUBLISHER_MANAGER_HOST: publisher-manager
+  PUBLISHER_MANAGER_PORT: "8081"
+ingress:
+  enabled: false
+name: mysql

@@ -1,8 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: mysql-deployment
+  labels:
+    app: mysql
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: mysql
@@ -15,16 +18,17 @@ spec:
         - name: mysql
           image: mysql:latest
           env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: root
-            - name: MYSQL_DATABASE
-              value: bootdb
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
+            - name: GAME_MANAGER_PORT
+              value: "{{ .Values.env.GAME_MANAGER_PORT }}"
+            - name: PUBLISHER_MANAGER_HOST
+              value: publisher-manager
+            - name: PUBLISHER_MANAGER_PORT
+              value: "8080"
+            - name: MYSQL_CONTAINER
+              value: "{{ .Values.env.MYSQL_CONTAINER }}"
+            - name: MYSQL_PORT
+              value: "{{ .Values.env.MYSQL_PORT }}"
           ports:
             - containerPort: 3306
-          volumeMounts:
-            - name: mysql-persistent-storage
-              mountPath: /var/lib/mysql
-      volumes:
-        - name: mysql-persistent-storage
-          persistentVolumeClaim:
-            claimName: mysql-pv-claim
