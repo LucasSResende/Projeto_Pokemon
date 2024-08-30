@@ -15,22 +15,18 @@ spec:
         app: {{include "publisher-manager.name" . }}
     spec:
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        ports:
-          - containerPort: {{ .Values.service.port }}
-        env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
-          - name: GAME_MANAGER_HOST
-            value: "{{ .Values.env.GAME_MANAGER_HOST }}"
-          - name: GAME_MANAGER_PORT
-            value: "{{ .Values.env.GAME_MANAGER_PORT }}"
-          - name: PUBLISHER_MANAGER_HOST
-            value: "{{ .Values.env.PUBLISHER_MANAGER_HOST }}"
-          - name: PUBLISHER_MANAGER_PORT
-            value: "{{ .Values.env.PUBLISHER_MANAGER_PORT }}"
-          - name: MYSQL_CONTAINER
-            value: "{{ .Values.env.MYSQL_CONTAINER }}"
-          - name: MYSQL_PORT
-            value: "{{ .Values.env.MYSQL_PORT }}"
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag}}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.env.SPRING_PROFILES_ACTIVE}}"
+            - name: SERVER_HOST
+              value: "{{ .Values.env.SERVER_HOST}}"
+            - name: SERVER_PORT
+              value: "{{ .Values.env.SERVER_PORT}}"
+            - name: MYSQL_HOST
+              value: "{{ .Values.env.MYSQL_HOST }}"
+            - name: MYSQL_PORT
+              value: "{{ .Values.env.MYSQL_PORT }}"

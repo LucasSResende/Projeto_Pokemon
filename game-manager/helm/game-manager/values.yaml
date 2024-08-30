@@ -7,12 +7,14 @@ service:
   targetPort: 8081
 env:
   SPRING_PROFILES_ACTIVE: prod
-  PUBLISHER_MANAGER_HOST: publisher-manager
-  PUBLISHER_MANAGER_PORT: "8080"
   GAME_MANAGER_PORT: "8081"
-  MYSQL_CONTAINER: "mysql"
+  GAME_MANAGER_HOST: localhost
+  MYSQL_HOST: "mysql"
   MYSQL_PORT: "3306"
-  GAME_MANAGER_HOST: "game-manager"
+  MYSQL_ROOT_PASSWORD: "root"
+  MYSQL_ROOT_USERNAME: "root"
+  SERVER_HOST: publisher-manager
+  SERVER_PORT: "8080"
 ingress:
   enabled: false
 autoscaling:

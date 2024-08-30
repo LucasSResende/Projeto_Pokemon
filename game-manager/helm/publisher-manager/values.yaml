@@ -1,19 +1,21 @@
 replicaCount: 1
 image:
   repository: adautomendes/publisher-manager
-  tag: 1.0.1
+  tag: latest
 service:
   type: ClusterIP
   port: 8080
   targetPort: 8080
 env:
   SPRING_PROFILES_ACTIVE: prod
-  PUBLISHER_MANAGER_HOST: publisher-manager
-  PUBLISHER_MANAGER_PORT: "8080"
   GAME_MANAGER_PORT: "8081"
-  GAME_MANAGER_HOST: "game-manager"
-  MYSQL_CONTAINER: "mysql"
+  GAME_MANAGER_HOST: localhost
+  MYSQL_HOST: "mysql"
   MYSQL_PORT: "3306"
+  MYSQL_ROOT_PASSWORD: "root"
+  MYSQL_ROOT_USERNAME: "root"
+  SERVER_HOST: publisher-manager
+  SERVER_PORT: "8080"
 ingress:
   enabled: false
 autoscaling:

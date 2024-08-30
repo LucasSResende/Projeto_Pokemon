@@ -22,13 +22,15 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "{{ .Values.env.SPRING_PROFILES_ACTIVE }}"
+            - name: GAME_MANAGER_HOST
+              value: "{{ .Values.env.GAME_MANAGER_HOST }}"
             - name: GAME_MANAGER_PORT
               value: "{{ .Values.env.GAME_MANAGER_PORT }}"
-            - name: PUBLISHER_MANAGER_HOST
-              value: publisher-manager
-            - name: PUBLISHER_MANAGER_PORT
-              value: "8080"
-            - name: MYSQL_CONTAINER
-              value: "{{ .Values.env.MYSQL_CONTAINER }}"
+            - name: SERVER_HOST
+              value: "{{ .Values.env.SERVER_HOST}}"
+            - name: SERVER_PORT
+              value: "{{ .Values.env.SERVER_PORT}}"
+            - name: MYSQL_HOST
+              value: "{{ .Values.env.MYSQL_HOST }}"
             - name: MYSQL_PORT
               value: "{{ .Values.env.MYSQL_PORT }}"
