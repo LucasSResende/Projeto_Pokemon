@@ -1,45 +1,49 @@
 package br.inatel.gameproject.controller;
 
 import br.inatel.gameproject.model.dto.GameDTO;
+import br.inatel.gameproject.service.GameService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebClient
-@ActiveProfiles("test")
-@DisplayName("GameController Tests")
+@WebMvcTest(GameController.class)
+@DisplayName("GameController Unit Tests")
 class GameControllerTest {
 
-    GameDTO gameDTO;
-    private WebTestClient webTestClient;
-    @Value("${game.manager.port}")
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Value("${game.manager.host}")
-    private String host;
+    @MockBean
+    private GameService gameService;
 
+    private GameDTO gameDTO;
 
     @BeforeEach
     public void setup() {
-        String url = String.format("http://%s:%d", host, port);
-        this.webTestClient = WebTestClient.bindToServer().baseUrl(url).build();
         gameDTO = GameDTO.builder()
                 .publisherId("microsoft")
                 .name("Halo Infinite")
-                .timePlayed(Map.of(LocalDate.of(2023, 12, 1), 20,
+                .timePlayed(Map.of(
+                        LocalDate.of(2023, 12, 1), 20,
                         LocalDate.of(2023, 1, 1), 18,
                         LocalDate.of(2024, 2, 3), 19,
                         LocalDate.of(2024, 2, 9), 24))
@@ -48,39 +52,75 @@ class GameControllerTest {
 
     @Test
     @DisplayName("Return the created game")
-    void givenGame_whenCreateGameIsCalled_thenReturnCreatedGame() {
-        List<GameDTO> response = webTestClient.post()
-                .uri("/game")
-                .body(BodyInserters.fromValue(gameDTO))
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBodyList(GameDTO.class)
-                .returnResult()
-                .getResponseBody();
+    void givenGame_whenCreateGameIsCalled_thenReturnCreatedGame() throws Exception {
+        when(gameService.createGame(any(GameDTO.class))).thenReturn(gameDTO);
 
-        assertThat(response).isNotNull();
-        assertThat(response.get(0).getId()).isNotNull();
-        assertThat(response.get(0).getPublisherId()).isEqualTo(gameDTO.getPublisherId());
-        assertThat(response.get(0).getName()).isEqualTo(gameDTO.getName());
-        assertThat(response.get(0).getTimePlayed()).isEqualTo(gameDTO.getTimePlayed());
+        mockMvc.perform(post("/game")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "publisherId": "microsoft",
+                                  "name": "Halo Infinite",
+                                  "timePlayed": {
+                                    "2023-12-01": 20,
+                                    "2023-01-01": 18,
+                                    "2024-02-03": 19,
+                                    "2024-02-09": 24
+                                  }
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Halo Infinite"))
+                .andExpect(jsonPath("$.publisherId").value("microsoft"));
+
+        ArgumentCaptor<GameDTO> gameCaptor = ArgumentCaptor.forClass(GameDTO.class);
+        verify(gameService).createGame(gameCaptor.capture());
+
+        GameDTO capturedGame = gameCaptor.getValue();
+        assertThat(capturedGame.getName()).isEqualTo("Halo Infinite");
+        assertThat(capturedGame.getPublisherId()).isEqualTo("microsoft");
+        assertThat(capturedGame.getTimePlayed()).isEqualTo(gameDTO.getTimePlayed());
     }
 
     @Test
-    @DisplayName("Return a list of games")
-    void givenPublisherId_whenGetGamesIsCalled_thenReturnListOfAllGames() {
-        List<GameDTO> response = webTestClient.get()
-                .uri("/game?publisherId=microsoft")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(GameDTO.class)
-                .returnResult()
-                .getResponseBody();
+    @DisplayName("Return a list of games when publisherId is provided")
+    void givenPublisherId_whenGetGamesIsCalled_thenReturnListOfGames() throws Exception {
+        when(gameService.getAllGames("microsoft")).thenReturn(List.of(gameDTO));
 
-        assertThat(response).isNotNull();
-        assertThat(response.get(0).getId()).isNotNull();
-        assertThat(response.get(0).getName()).isEqualTo(gameDTO.getName());
-        assertThat(response.get(0).getPublisherId()).isEqualTo(gameDTO.getPublisherId());
-        assertThat(response.get(0).getTimePlayed()).isEqualTo(gameDTO.getTimePlayed());
+        mockMvc.perform(get("/game")
+                        .param("publisherId", "microsoft")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Halo Infinite"))
+                .andExpect(jsonPath("$[0].publisherId").value("microsoft"));
+
+        verify(gameService).getAllGames("microsoft");
     }
 
+    @Test
+    @DisplayName("Return a list of all games when no publisherId is provided")
+    void whenGetGamesIsCalled_thenReturnListOfAllGames() throws Exception {
+        when(gameService.getAllGames(null)).thenReturn(List.of(gameDTO));
+
+        mockMvc.perform(get("/game")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Halo Infinite"))
+                .andExpect(jsonPath("$[0].publisherId").value("microsoft"));
+
+        verify(gameService).getAllGames(null);
+    }
+
+    @Test
+    @DisplayName("Handle empty list when no games are found")
+    void givenNoGames_whenGetGamesIsCalled_thenReturnEmptyList() throws Exception {
+        when(gameService.getAllGames(null)).thenReturn(List.of());
+
+        mockMvc.perform(get("/game")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(gameService).getAllGames(null);
+    }
 }
