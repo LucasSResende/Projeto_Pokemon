@@ -10,7 +10,10 @@ pipeline {
 
         stage('Clean Workspace') {
             steps {
-                cleanWs()
+                script{
+                    cleanWs()
+                    println "Namespace = ${NAMESPACE}"
+                }
             }
         }
 
