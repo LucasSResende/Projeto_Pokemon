@@ -12,8 +12,6 @@ env:
   GAME_MANAGER_HOST: localhost
   MYSQL_HOST: "mysql"
   MYSQL_PORT: "3306"
-  MYSQL_ROOT_PASSWORD: "root"
-  MYSQL_ROOT_USERNAME: "root"
   SERVER_HOST: publisher-manager
   SERVER_PORT: "8080"
 ingress:
