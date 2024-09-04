@@ -4,13 +4,14 @@ pipeline {
     environment {
         GITHUB_SSH_CREDENTIALS = credentials('github-key')
         DOCKER_IMAGE = 'lucassresende/game-manager'
+        NAMESPACE = 'game'
     }
 
     stages {
 
         stage('Clean Workspace') {
             steps {
-                script{
+                script {
                     cleanWs()
                     println "Namespace = ${NAMESPACE}"
                 }
@@ -20,7 +21,7 @@ pipeline {
         stage('Clone Repo') {
             steps {
                 script {
-                    git branch: 'main', url: 'https://github.com/LucasSResende/Project1_IDP.git', credentialsId: 'github-key'
+                    git branch: 'main', url: 'https://github.com/LucasSResende/Project1_IDP', credentialsId: 'github-key'
                 }
             }
         }
