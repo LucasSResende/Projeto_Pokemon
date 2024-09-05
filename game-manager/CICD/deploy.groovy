@@ -58,10 +58,10 @@ pipeline {
         stage('Check and Install Helm Releases') {
             steps {
                 script {
-                    def gameManagerExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "${RELEASE_NAME}$" | grep ${RELEASE_NAME}', returnStatus: true)
+                    def gameManagerExists = sh(script: 'cd game-manager && helm list --namespace ${NAMESPACE} --filter "${RELEASE_NAME}$" | grep ${RELEASE_NAME}', returnStatus: true)
                     if (gameManagerExists != 0) {
                         echo 'Release Game Manager não encontrada. Instalando...'
-                        sh 'cd game-manager && helm install ${RELEASE_NAME} ./helm/game-manager'
+                        sh 'helm install ${RELEASE_NAME} ./helm/game-manager'
                     } else {
                         echo 'Release Game Manager já existe.'
                     }
