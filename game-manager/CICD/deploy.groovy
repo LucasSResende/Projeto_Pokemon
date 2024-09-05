@@ -28,7 +28,7 @@ pipeline {
         stage('Clone Repo') {
             steps {
                 script {
-                    git branch: 'main', url: 'https://github.com/LucasSResende/Project1_IDP.git', credentialsId: 'github-key'
+                    git branch: 'main', url: 'https://github.com/LucasSResende/Project1_IDP', credentialsId: 'github-key'
                 }
             }
         }
@@ -59,10 +59,10 @@ pipeline {
             steps {
                 script {
                     // Exibe o diretório atual e lista os arquivos para depuração
-                    sh 'pwd' // Verifica o diretório atual
-                    sh 'ls -la' // Lista o conteúdo do diretório atual para verificar onde o chart está
+                    sh 'cd game-manager'
+                    sh 'pwd'
+                    sh 'ls -la'
 
-                    // Definindo o caminho correto do Helm Chart
                     def chartPath = './helm/game-manager'
                     def chartExists = sh(script: "test -d ${chartPath} && echo 'exists'", returnStdout: true).trim()
                     if (chartExists == 'exists') {
