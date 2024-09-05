@@ -71,9 +71,6 @@ pipeline {
                     LOCAL_PORT = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o jsonpath='{.spec.ports[0].nodePort}'", returnStdout: true).trim()
                     SERVICE_NODE_PORT = LOCAL_PORT
                     echo "Service NodePort: ${SERVICE_NODE_PORT}"
-
-                    CLUSTER_IP = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-                    echo "Cluster IP: ${CLUSTER_IP}"
                 }
             }
         }
