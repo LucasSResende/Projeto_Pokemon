@@ -60,11 +60,11 @@ pipeline {
                 script {
                     sh 'pwd'
                     sh 'ls -la'
-                    def releaseExists = sh(script: "helm status ${RELEASE_NAME} > /dev/null 2>&1", returnStatus: true) == 0
-                    if (releaseExists) {
-                        sh "cd game-manager && helm install ${RELEASE_NAME} ./helm/game-manager"
+                    def releaseExists = sh(script: "helm list --namespace ${NAMESPACE} -q | grep -w ${RELEASE_NAME} > /dev/null 2>&1", returnStatus: true) == 0
+                    if (!releaseExists) {
+                        sh "cd game-manager && helm install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}"
                     } else {
-                        echo "Helm release '${RELEASE_NAME}' exists, next stage."
+                        echo "Helm release '${RELEASE_NAME}' already exists, skipping installation."
                     }
                 }
             }
