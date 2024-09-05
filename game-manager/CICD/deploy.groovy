@@ -50,7 +50,7 @@ pipeline {
         stage('Set Kubernetes Context') {
             steps {
                 script {
-                    sh "cd game-manager && kubectl config set-context --current --namespace=${NAMESPACE}"
+                    sh "kubectl config set-context --current --namespace=${NAMESPACE}"
                 }
             }
         }
@@ -65,7 +65,7 @@ pipeline {
                     def chartExists = sh(script: "test -d ${chartPath} && echo 'exists'", returnStdout: true).trim()
                     if (chartExists == 'exists') {
                         echo 'Chart encontrado. Instalando...'
-                        sh "helm install ${RELEASE_NAME} ${chartPath} --namespace ${NAMESPACE}"
+                        sh "cd game-manager && helm install ${RELEASE_NAME} ${chartPath} --namespace ${NAMESPACE}"
                     } else {
                         error "Erro: Helm Chart no caminho ${chartPath} não encontrado."
                     }
