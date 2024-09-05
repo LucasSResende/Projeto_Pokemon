@@ -50,7 +50,7 @@ pipeline {
         stage('Set Kubernetes Context') {
             steps {
                 script {
-                    sh "kubectl config set-context --current --namespace=${NAMESPACE}"
+                    sh "cd game-manager && kubectl config set-context --current --namespace=${NAMESPACE}"
                 }
             }
         }
@@ -58,8 +58,6 @@ pipeline {
         stage('Check and Install Helm Releases') {
             steps {
                 script {
-                    // Exibe o diretório atual e lista os arquivos para depuração
-                    sh 'cd game-manager'
                     sh 'pwd'
                     sh 'ls -la'
 
