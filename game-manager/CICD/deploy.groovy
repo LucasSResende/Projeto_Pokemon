@@ -74,11 +74,14 @@ pipeline {
         stage('Change Service Type to NodePort') {
             steps {
                 script {
-                    sh "kubectl patch svc ${RELEASE_NAME} -n ${NAMESPACE} -p '{" spec ": {" type ": " NodePort "}}"
+                    sh '''
+                kubectl patch svc game-manager -n game -p '{"spec": {"type": "NodePort"}}'
+            '''
                     sleep(10)
                 }
             }
         }
+
 
         stage('Fetch NodePort') {
             steps {
