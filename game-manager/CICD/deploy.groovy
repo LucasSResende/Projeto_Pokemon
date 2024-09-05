@@ -5,9 +5,9 @@ pipeline {
         RELEASE_NAME = 'game-manager'
         NAMESPACE = 'game'
         SERVICE_PORT = 8081
-        LOCAL_PORT = 32566
+        LOCAL_PORT = ''
         CLUSTER_IP = '192.168.49.2'
-        SERVICE_NODE_PORT = 32566
+        SERVICE_NODE_PORT = ''
     }
 
     stages {
@@ -70,21 +70,33 @@ pipeline {
             }
         }
 
+        stage('Fetch Ports') {
+            steps {
+                script {
+                    LOCAL_PORT = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o jsonpath='{.spec.ports[0].nodePort}'", returnStdout: true).trim()
+                    SERVICE_NODE_PORT = LOCAL_PORT
+                    echo "Service NodePort: ${SERVICE_NODE_PORT}"
+
+                    CLUSTER_IP = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    echo "Cluster IP: ${CLUSTER_IP}"
+                }
+            }
+        }
+
         stage('Check Replicas and Run Pod') {
             steps {
                 script {
                     def isDeploymentReady = false
-                    for (int i = 0; i < 6; i++) { // 6 tentativas
+                    for (int i = 0; i < 6; i++) {
                         def readyReplicas = sh(script: "kubectl get deploy game-manager -o 'jsonpath={..status.readyReplicas}'", returnStdout: true).trim()
 
-                        // Verifica se readyReplicas é igual a 1
                         if (readyReplicas == '1') {
                             echo "Deployment is ready with 1 replica."
                             isDeploymentReady = true
                             break
                         } else {
                             echo "Deployment not ready yet. Attempt ${i + 1} of 6. Checking again in 10 seconds..."
-                            sleep(10) // Espera 10 segundos antes da próxima tentativa
+                            sleep(10)
                         }
                     }
 
@@ -105,7 +117,7 @@ pipeline {
                         echo 'Teste inicial da aplicação com curl executado com sucesso.'
                     }
 
-                    sh '''
+                    sh """
                         echo "CLUSTER_IP=${CLUSTER_IP}, SERVICE_NODE_PORT=${SERVICE_NODE_PORT}"
                         curl --location "http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game" \
                         --header "Content-Type: application/json" \
@@ -120,7 +132,7 @@ pipeline {
                                 "2023-05-04": 4
                             }
                         }'
-                    '''
+                    """
                 }
             }
         }
