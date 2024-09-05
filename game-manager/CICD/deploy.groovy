@@ -39,7 +39,7 @@ pipeline {
                     def status = sh(script: 'kubectl get namespace game', returnStatus: true)
                     if (status != 0) {
                         echo 'Namespace "game" não existe. Criando o namespace...'
-                        sh 'kubectl create namespace game-full'
+                        sh 'kubectl create namespace game'
                     } else {
                         echo 'Namespace "game" já existe.'
                     }
