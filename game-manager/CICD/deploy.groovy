@@ -5,9 +5,9 @@ pipeline {
         RELEASE_NAME = 'game-full'
         NAMESPACE = 'game'
         SERVICE_PORT = 8081
-        LOCAL_PORT = 31070
+        LOCAL_PORT = 32566
         CLUSTER_IP = '192.168.49.2'
-        SERVICE_NODE_PORT = 31070
+        SERVICE_NODE_PORT = 32566
     }
 
     stages {

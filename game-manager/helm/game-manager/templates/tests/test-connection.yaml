@@ -10,6 +10,6 @@ spec:
   containers:
     - name: wget
       image: busybox
-      command: ['wget']
-      args: ['{{ include "game-manager.fullname" . }}:{{ .Values.service.port }}']
+      command: [ 'wget' ]
+      args: [ '{{ include "game-manager.fullname" . }}:{{ .Values.gameManager.service.port }}' ]
   restartPolicy: Never
