@@ -58,14 +58,8 @@ pipeline {
         stage('Check and Install Helm Releases') {
             steps {
                 script {
-                    def releaseExists = sh(script: "helm list --namespace ${NAMESPACE} --filter \"^${RELEASE_NAME}\$\" | grep ${RELEASE_NAME}", returnStatus: true)
-
-                    if (releaseExists != 0) {
-                        echo "Release ${RELEASE_NAME} não encontrada. Instalando..."
-                        sh "helm install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}"
-                    } else {
-                        echo "Release ${RELEASE_NAME} já existe. Pulando a instalação."
-                    }
+                    echo "Verifying release ${RELEASE_NAME}..."
+                    sh "helm upgrade --install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}"
                 }
             }
         }
