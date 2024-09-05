@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "publisher-manager.fullname" . }}
+  labels:
+    app: {{ include "publisher-manager.name" . }}
+spec:
+  replicas: {{ .Values.publisherManager.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "publisher-manager.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{include "publisher-manager.name" . }}
+    spec:
+      containers:
+        - name: {{ include "publisher-manager.name" . }}
+          image: "{{ .Values.publisherManager.image.repository }}:{{ .Values.publisherManager.image.tag}}"
+          ports:
+            - containerPort: {{ .Values.publisherManager.service.port }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.publisherManager.env.SPRING_PROFILES_ACTIVE }}"
+            - name: GAME_MANAGER_HOST
+              value: "{{ .Values.publisherManager.env.GAME_MANAGER_HOST }}"
+            - name: GAME_MANAGER_PORT
+              value: "{{ .Values.publisherManager.env.GAME_MANAGER_PORT }}"
+            - name: SERVER_HOST
+              value: "{{ .Values.publisherManager.env.SERVER_HOST }}"
+            - name: SERVER_PORT
+              value: "{{ .Values.publisherManager.env.SERVER_PORT }}"
+            - name: MYSQL_HOST
+              value: "{{ .Values.publisherManager.env.MYSQL_HOST }}"
+            - name: MYSQL_PORT
+              value: "{{ .Values.publisherManager.env.MYSQL_PORT }}"

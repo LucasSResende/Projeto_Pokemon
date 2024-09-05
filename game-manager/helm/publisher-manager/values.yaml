@@ -4,16 +4,16 @@ image:
   tag: latest
 service:
   type: ClusterIP
-  port: 9090
-  targetPort: 9090
+  port: 8081
+  targetPort: 8081
 env:
   SPRING_PROFILES_ACTIVE: prod
-  GAME_MANAGER_PORT: "8080"
+  GAME_MANAGER_PORT: "8081"
   GAME_MANAGER_HOST: localhost
   MYSQL_HOST: "mysql"
   MYSQL_PORT: "3306"
   SERVER_HOST: publisher-manager
-  SERVER_PORT: "9090"
+  SERVER_PORT: "8080"
 ingress:
   enabled: false
 autoscaling:

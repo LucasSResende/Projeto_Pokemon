@@ -2,11 +2,9 @@ pipeline {
     agent any
 
     environment {
-        BD_NAME = 'mysql'
-        API_NAME = 'publisher'
-        SERVICE_NAME = 'game-manager'
+        RELEASE_NAME = 'game-manager'
         NAMESPACE = 'game'
-        SERVICE_PORT = 8080
+        SERVICE_PORT = 8081
         LOCAL_PORT = 31396
         CLUSTER_IP = '192.168.49.2'
         SERVICE_NODE_PORT = 30594
@@ -41,7 +39,7 @@ pipeline {
                     def status = sh(script: 'kubectl get namespace game', returnStatus: true)
                     if (status != 0) {
                         echo 'Namespace "game" não existe. Criando o namespace...'
-                        sh 'cd game-manager && kubectl create namespace game'
+                        sh 'kubectl create namespace game'
                     } else {
                         echo 'Namespace "game" já existe.'
                     }
@@ -60,30 +58,39 @@ pipeline {
         stage('Check and Install Helm Releases') {
             steps {
                 script {
-                    def mysqlExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "^${BD_NAME}$" | grep ${BD_NAME}', returnStatus: true)
-                    if (mysqlExists != 0) {
-                        echo 'Release MySQL não encontrada. Instalando...'
-                        sh 'helm install ${BD_NAME} ./helm/mysql --namespace ${NAMESPACE}'
-                    } else {
-                        echo 'Release MySQL já existe.'
-                    }
-
-                    def publisherExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "^${API_NAME}$" | grep ${API_NAME}', returnStatus: true)
-                    if (publisherExists != 0) {
-                        echo 'Release Publisher não encontrada. Instalando...'
-                        sh 'helm install ${API_NAME} ./helm/publisher-manager --namespace ${NAMESPACE}'
-                    } else {
-                        echo 'Release Publisher já existe.'
-                    }
-
-                    def gameManagerExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "^${SERVICE_NAME}$" | grep ${SERVICE_NAME}', returnStatus: true)
+                    def gameManagerExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "^${RELEASE_NAME}$" | grep ${RELEASE_NAME}', returnStatus: true)
                     if (gameManagerExists != 0) {
                         echo 'Release Game Manager não encontrada. Instalando...'
-                        sh 'helm install ${SERVICE_NAME} ./helm/game-manager --namespace ${NAMESPACE}'
+                        sh 'helm install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}'
                     } else {
                         echo 'Release Game Manager já existe.'
                     }
 
+                }
+            }
+        }
+
+        stage('Check Replicas and Run Pod') {
+            steps {
+                script {
+                    def isDeploymentReady = false
+                    for (int i = 0; i < 6; i++) { // 6 tentativas
+                        def readyReplicas = sh(script: "kubectl get deploy game-manager -o 'jsonpath={..status.readyReplicas}'", returnStdout: true).trim()
+
+                        // Verifica se readyReplicas é igual a 1
+                        if (readyReplicas == '1') {
+                            echo "Deployment is ready with 1 replica."
+                            isDeploymentReady = true
+                            break
+                        } else {
+                            echo "Deployment not ready yet. Attempt ${i + 1} of 6. Checking again in 10 seconds..."
+                            sleep(10) // Espera 10 segundos antes da próxima tentativa
+                        }
+                    }
+
+                    if (!isDeploymentReady) {
+                        error "Deployment check failed: No replicas are ready after 6 attempts."
+                    }
                 }
             }
         }
@@ -114,14 +121,6 @@ pipeline {
                             }
                         }'
                     '''
-                }
-            }
-        }
-
-        stage('Check Pods') {
-            steps {
-                script {
-                    sh 'kubectl get pods'
                 }
             }
         }
