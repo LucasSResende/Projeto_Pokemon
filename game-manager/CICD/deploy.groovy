@@ -71,20 +71,23 @@ pipeline {
         }
 
 
-        stage('Fetch Ports') {
+        stage('Change Service Type to NodePort') {
             steps {
                 script {
-                    def serviceDetails = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o json", returnStdout: true).trim()
-                    LOCAL_PORT = sh(script: "echo '${serviceDetails}' | jq -r '.spec.ports[0].nodePort'", returnStdout: true).trim()
-                    if (LOCAL_PORT == '' || LOCAL_PORT == 'null') {
-                        error "Failed to fetch NodePort for service '${RELEASE_NAME}' in namespace '${NAMESPACE}'."
-                    }
-                    SERVICE_NODE_PORT = LOCAL_PORT
-                    echo "Service NodePort: ${SERVICE_NODE_PORT}"
+                    sh "kubectl patch svc ${RELEASE_NAME} -n ${NAMESPACE} -p '{" spec ": {" type ": " NodePort "}}"
+                    sleep(10)
                 }
             }
         }
 
+        stage('Fetch NodePort') {
+            steps {
+                script {
+                    SERVICE_NODE_PORT = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o jsonpath='{.spec.ports[0].nodePort}'", returnStdout: true).trim()
+                    echo "Service NodePort: ${SERVICE_NODE_PORT}"
+                }
+            }
+        }
 
         stage('Check Replicas and Run Pod') {
             steps {
@@ -113,10 +116,9 @@ pipeline {
         stage('Get and Post Tests') {
             steps {
                 script {
-                    // Corrige o protocolo da URL
-                    def testApp = sh(script: "curl --silent --output /dev/null --write-out '%{http_code}' http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStatus: true)
-                    if (testApp != 200) {
-                        error "Falha ao testar a aplicação com curl. Status code: ${testApp}."
+                    def testApp = sh(script: "curl ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStatus: true)
+                    if (testApp != 0) {
+                        error 'Falha ao testar a aplicação com curl.'
                     } else {
                         echo 'Teste inicial da aplicação com curl executado com sucesso.'
                     }
