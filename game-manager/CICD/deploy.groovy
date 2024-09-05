@@ -55,20 +55,12 @@ pipeline {
             }
         }
 
-        stage('Check and Install Helm Releases') {
+        stage('Install Helm Releases') {
             steps {
                 script {
                     sh 'pwd'
                     sh 'ls -la'
-
-                    def chartPath = './helm/game-manager'
-                    def chartExists = sh(script: "test -d ${chartPath} && echo 'exists'", returnStdout: true).trim()
-                    if (chartExists == 'exists') {
-                        echo 'Chart encontrado. Instalando...'
-                        sh "cd game-manager && helm install ${RELEASE_NAME} ${chartPath} --namespace ${NAMESPACE}"
-                    } else {
-                        error "Erro: Helm Chart no caminho ${chartPath} não encontrado."
-                    }
+                    sh "cd game-manager && helm install ${RELEASE_NAME} ./helm/game-manager"
                 }
             }
         }
