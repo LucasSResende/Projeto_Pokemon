@@ -74,12 +74,17 @@ pipeline {
         stage('Fetch Ports') {
             steps {
                 script {
-                    LOCAL_PORT = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o jsonpath='{.spec.ports[0].nodePort}'", returnStdout: true).trim()
+                    def serviceDetails = sh(script: "kubectl get svc ${RELEASE_NAME} -n ${NAMESPACE} -o json", returnStdout: true).trim()
+                    LOCAL_PORT = sh(script: "echo '${serviceDetails}' | jq -r '.spec.ports[0].nodePort'", returnStdout: true).trim()
+                    if (LOCAL_PORT == '' || LOCAL_PORT == 'null') {
+                        error "Failed to fetch NodePort for service '${RELEASE_NAME}' in namespace '${NAMESPACE}'."
+                    }
                     SERVICE_NODE_PORT = LOCAL_PORT
                     echo "Service NodePort: ${SERVICE_NODE_PORT}"
                 }
             }
         }
+
 
         stage('Check Replicas and Run Pod') {
             steps {
