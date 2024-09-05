@@ -55,12 +55,17 @@ pipeline {
             }
         }
 
-        stage('Install or Upgrade Helm Releases') {
+        stage('Check and Install Helm Releases') {
             steps {
                 script {
                     sh 'pwd'
                     sh 'ls -la'
-                    sh "cd game-manager && helm upgrade --install ${RELEASE_NAME} ./helm/game-manager"
+                    def releaseExists = sh(script: "helm status ${RELEASE_NAME} > /dev/null 2>&1", returnStatus: true) == 0
+                    if (!releaseExists) {
+                        sh "cd game-manager && helm install ${RELEASE_NAME} ./helm/game-manager"
+                    } else {
+                        echo "Helm release '${RELEASE_NAME}' exists, next stage."
+                    }
                 }
             }
         }
