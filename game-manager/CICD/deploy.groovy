@@ -116,32 +116,37 @@ pipeline {
         stage('Get and Post Tests') {
             steps {
                 script {
-                    def testApp = sh(script: "curl ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStatus: true)
-                    if (testApp != 0) {
-                        error 'Falha ao testar a aplicação com curl.'
+                    if (SERVICE_NODE_PORT == '') {
+                        error 'SERVICE_NODE_PORT não está definida. Verifique o estágio "Fetch NodePort".'
+                    }
+
+                    def testApp = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStdout: true).trim()
+                    if (testApp != '200') {
+                        error "Falha ao testar a aplicação com curl. Código de status HTTP retornado: ${testApp}"
                     } else {
                         echo 'Teste inicial da aplicação com curl executado com sucesso.'
                     }
 
                     sh """
-                        echo "CLUSTER_IP=${CLUSTER_IP}, SERVICE_NODE_PORT=${SERVICE_NODE_PORT}"
-                        curl --location "http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game" \
-                        --header "Content-Type: application/json" \
-                        --header "Cookie: JSESSIONID.bfb4ed19=node01jcgdahjvoy2oy86hgtdfe9v1.node0" \
-                        --data '{
-                            "publisherId": "nintendo",
-                            "name": "Mario",
-                            "timePlayed": {
-                                "2023-05-01": 10,
-                                "2023-05-02": 2,
-                                "2023-05-03": 3,
-                                "2023-05-04": 4
-                            }
-                        }'
-                    """
+                echo "CLUSTER_IP=${CLUSTER_IP}, SERVICE_NODE_PORT=${SERVICE_NODE_PORT}"
+                curl --location "http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game" \
+                --header "Content-Type: application/json" \
+                --header "Cookie: JSESSIONID.bfb4ed19=node01jcgdahjvoy2oy86hgtdfe9v1.node0" \
+                --data '{
+                    "publisherId": "nintendo",
+                    "name": "Mario",
+                    "timePlayed": {
+                        "2023-05-01": 10,
+                        "2023-05-02": 2,
+                        "2023-05-03": 3,
+                        "2023-05-04": 4
+                    }
+                }'
+            """
                 }
             }
         }
+
 
         stage('Clean Workspace') {
             steps {
