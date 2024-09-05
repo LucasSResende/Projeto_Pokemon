@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        RELEASE_NAME = 'game-full'
+        RELEASE_NAME = 'game-manager'
         NAMESPACE = 'game'
         SERVICE_PORT = 8081
         LOCAL_PORT = 32566
@@ -58,10 +58,10 @@ pipeline {
         stage('Check and Install Helm Releases') {
             steps {
                 script {
-                    def gameManagerExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "^${RELEASE_NAME}$" | grep ${RELEASE_NAME}', returnStatus: true)
+                    def gameManagerExists = sh(script: 'helm list --namespace ${NAMESPACE} --filter "${RELEASE_NAME}$" | grep ${RELEASE_NAME}', returnStatus: true)
                     if (gameManagerExists != 0) {
                         echo 'Release Game Manager não encontrada. Instalando...'
-                        sh 'helm install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}'
+                        sh 'helm install ${RELEASE_NAME} ./helm/game-manager'
                     } else {
                         echo 'Release Game Manager já existe.'
                     }
