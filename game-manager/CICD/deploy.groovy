@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        RELEASE_NAME = 'game-manager'
+        RELEASE_NAME = 'game-full'
         NAMESPACE = 'game'
         SERVICE_PORT = 8081
         LOCAL_PORT = 31396
         CLUSTER_IP = '192.168.49.2'
-        SERVICE_NODE_PORT = 30594
+        SERVICE_NODE_PORT = 303936
     }
 
     stages {
@@ -39,7 +39,7 @@ pipeline {
                     def status = sh(script: 'kubectl get namespace game', returnStatus: true)
                     if (status != 0) {
                         echo 'Namespace "game" não existe. Criando o namespace...'
-                        sh 'kubectl create namespace game'
+                        sh 'kubectl create namespace game-full'
                     } else {
                         echo 'Namespace "game" já existe.'
                     }
