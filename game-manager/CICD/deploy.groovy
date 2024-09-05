@@ -108,9 +108,10 @@ pipeline {
         stage('Get and Post Tests') {
             steps {
                 script {
-                    def testApp = sh(script: "curl ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStatus: true)
-                    if (testApp != 0) {
-                        error 'Falha ao testar a aplicação com curl.'
+                    // Corrige o protocolo da URL
+                    def testApp = sh(script: "curl --silent --output /dev/null --write-out '%{http_code}' http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStatus: true)
+                    if (testApp != 200) {
+                        error "Falha ao testar a aplicação com curl. Status code: ${testApp}."
                     } else {
                         echo 'Teste inicial da aplicação com curl executado com sucesso.'
                     }
