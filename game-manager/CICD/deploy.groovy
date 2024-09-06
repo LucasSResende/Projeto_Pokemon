@@ -147,15 +147,6 @@ pipeline {
             }
         }
 
-        stage('Pointing to Windows Postman') {
-            steps {
-                script {
-                    sh 'kubectl port-forward svc/game-manager 8081:8081 --namespace=game && kubectl port-forward svc/publisher-manager 8080:8080 --namespace=game'
-                }
-            }
-        }
-
-
         stage('Clean Workspace') {
             steps {
                 cleanWs()
