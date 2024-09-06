@@ -11,10 +11,10 @@ pipeline {
                 script {
                     def status = sh(script: 'minikube status', returnStatus: true)
                     if (status != 0) {
-                        echo 'Minikube não está rodando. Iniciando o Minikube...'
+                        echo 'Minikube is not running. Starting Minikube...'
                         sh 'minikube start'
                     } else {
-                        echo 'Minikube já está rodando.'
+                        echo 'Minikube is already running.'
                     }
                 }
             }
@@ -33,10 +33,10 @@ pipeline {
                 script {
                     def status = sh(script: 'kubectl get namespace game', returnStatus: true)
                     if (status != 0) {
-                        echo 'Namespace "game" não existe. Criando o namespace...'
+                        echo 'Namespace "game" does not exist. Creating the namespace...'
                         sh 'kubectl create namespace game'
                     } else {
-                        echo 'Namespace "game" já existe.'
+                        echo 'Namespace "game" already exists.'
                     }
                 }
             }
@@ -65,18 +65,16 @@ pipeline {
             }
         }
 
-
         stage('Change Service Type to NodePort') {
             steps {
                 script {
                     sh '''
-                kubectl patch svc game-manager -n game -p '{"spec": {"type": "NodePort"}}'
-            '''
+                    kubectl patch svc game-manager -n game -p '{"spec": {"type": "NodePort"}}'
+                    '''
                     sleep(10)
                 }
             }
         }
-
 
         stage('Fetch NodePort') {
             steps {
@@ -111,36 +109,52 @@ pipeline {
             }
         }
 
-        stage('Get and Post Tests') {
+        stage('Check Application Health') {
             steps {
                 script {
                     if (SERVICE_NODE_PORT == '') {
-                        error 'SERVICE_NODE_PORT não está definida. Verifique o estágio "Fetch NodePort".'
+                        error 'SERVICE_NODE_PORT is not defined. Check the "Fetch NodePort" stage.'
                     }
 
                     def testApp = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStdout: true).trim()
-                    if (testApp != '200') {
-                        error "Falha ao testar a aplicação com curl. Código de status HTTP retornado: ${testApp}"
+                    if (testApp != '1') {
+                        error "Application health check failed with curl. HTTP status code returned: ${testApp}"
                     } else {
-                        echo 'Teste inicial da aplicação com curl executado com sucesso.'
+                        echo 'Initial application test with curl executed successfully.'
+                    }
+                }
+            }
+        }
+
+        stage('Post Test') {
+            steps {
+                script {
+                    if (SERVICE_NODE_PORT == '') {
+                        error 'SERVICE_NODE_PORT is not defined. Check the "Fetch NodePort" stage.'
+                    }
+
+                    def testCurlPost = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStdout: true).trim()
+                    if (testCurlPost != '200') {
+                        error "Application test with post failed. HTTP status code returned: ${testCurlPost}"
+                    } else {
+                        echo 'Initial application test with curl executed successfully.'
                     }
 
                     sh """
-                echo "CLUSTER_IP=${CLUSTER_IP}, SERVICE_NODE_PORT=${SERVICE_NODE_PORT}"
-                curl --location "http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game" \
-                --header "Content-Type: application/json" \
-                --header "Cookie: JSESSIONID.bfb4ed19=node01jcgdahjvoy2oy86hgtdfe9v1.node0" \
-                --data '{
-                    "publisherId": "nintendo",
-                    "name": "Mario",
-                    "timePlayed": {
-                        "2023-05-01": 10,
-                        "2023-05-02": 2,
-                        "2023-05-03": 3,
-                        "2023-05-04": 4
-                    }
-                }'
-            """
+                    echo "CLUSTER_IP=${CLUSTER_IP}, SERVICE_NODE_PORT=${SERVICE_NODE_PORT}"
+                    curl --location "http://${CLUSTER_IP}:${SERVICE_NODE_PORT}/game" \
+                    --header "Content-Type: application/json" \
+                    --data '{
+                        "publisherId": "nintendo",
+                        "name": "Mario",
+                        "timePlayed": {
+                            "2023-05-01": 10,
+                            "2023-05-02": 2,
+                            "2023-05-03": 3,
+                            "2023-05-04": 4
+                        }
+                    }'
+                    """
                 }
             }
         }
