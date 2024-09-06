@@ -5,6 +5,9 @@ You need to install the following technology:
 <div align="left">
 
 ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-3069DE?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Helm](https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=Helm&labelColor=0F1689)
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white)
 
 </div>
 
@@ -17,8 +20,8 @@ in which the user can save and list games. The target audience for this project 
 users who like games and want to better manager their time played.
 
 In this project I used the  [Mysql](https://hub.docker.com/_/mysql)
-and [adautomendes/publisher-manager](https://hub.docker.com/r/adautomendes/publisher-manager) containers,
-and some knowledge acquired in alura courses.
+and [adautomendes/publisher-manager](https://hub.docker.com/r/adautomendes/publisher-manager) images,
+knowledge acquired about Java, Spring Boot, kubernetes, Helm, Jenkins and more.
 ---
 
 ## Diagrams
@@ -35,7 +38,7 @@ The user can perform three operations:
 <h1 align="center">
     <img align="center" src="modeling/SequenceDiagramGetAll.png" width="500px"/>
 </h1>
-
+~~~~~~~~
 - Read only games specified by publisherId, following the next sequence diagram:
 
 <h1 align="center">
@@ -65,6 +68,11 @@ What I used to development the project:</p>
 ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 ![Junit](https://img.shields.io/badge/Junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white)
 ![Karate](game-manager/imgkarate.png)
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-3069DE?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Helm](https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=Helm&labelColor=0F1689)
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white)
+
 
 </div>
 
