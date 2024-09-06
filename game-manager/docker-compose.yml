@@ -5,8 +5,8 @@ services:
     image: mysql
     container_name: mysql
     ports:
-      - 3306:3306
-      - 33060:33060
+      - "3306:3306"
+      - "33060:33060"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=bootdb
@@ -22,7 +22,7 @@ services:
     image: adautomendes/publisher-manager
     container_name: publisher-manager
     ports:
-      - 8080:8080
+      - "8080:8080"
     healthcheck:
       test: curl --fail http://localhost:8080/publisher || exit 1
       start_period: 30s
@@ -50,7 +50,7 @@ services:
         JAR_FILE: target/game-manager-0.0.1-SNAPSHOT.jar
     container_name: game-manager
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SERVER_HOST=publisher-manager

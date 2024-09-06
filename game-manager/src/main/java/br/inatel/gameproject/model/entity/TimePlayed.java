@@ -20,8 +20,6 @@ public class TimePlayed {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "game_id")
-
     private Game game;
     private LocalDate timeDate;
     private Integer timeHour;

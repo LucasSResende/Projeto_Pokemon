@@ -1,7 +1,5 @@
 def RELEASE_NAME = 'game-manager'
 def NAMESPACE = 'game'
-def SERVICE_PORT = 8081
-def LOCAL_PORT = ''
 def CLUSTER_IP = '192.168.49.2'
 def SERVICE_NODE_PORT = ''
 
