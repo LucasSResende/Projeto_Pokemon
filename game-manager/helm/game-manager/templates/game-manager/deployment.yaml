@@ -35,3 +35,5 @@ spec:
               value: "{{ .Values.gameManager.env.MYSQL_HOST }}"
             - name: MYSQL_PORT
               value: "{{ .Values.gameManager.env.MYSQL_PORT }}"
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "*"
