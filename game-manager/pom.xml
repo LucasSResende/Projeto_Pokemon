@@ -10,7 +10,7 @@
     </parent>
     <groupId>br.inatel</groupId>
     <artifactId>game-manager</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>gameproject</name>
     <description>Project1IDP</description>
     <properties>
@@ -34,6 +34,10 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>

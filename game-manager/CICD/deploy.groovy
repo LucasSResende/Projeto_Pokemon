@@ -1,15 +1,12 @@
+def RELEASE_NAME = 'game-manager'
+def NAMESPACE = 'game'
+def SERVICE_PORT = 8081
+def LOCAL_PORT = ''
+def CLUSTER_IP = '192.168.49.2'
+def SERVICE_NODE_PORT = ''
+
 pipeline {
     agent any
-
-    environment {
-        RELEASE_NAME = 'game-manager'
-        NAMESPACE = 'game'
-        SERVICE_PORT = 8081
-        LOCAL_PORT = ''
-        CLUSTER_IP = '192.168.49.2'
-        SERVICE_NODE_PORT = ''
-    }
-
     stages {
         stage('Check Minikube Status') {
             steps {
@@ -62,7 +59,7 @@ pipeline {
                     sh 'ls -la'
                     def releaseExists = sh(script: "helm list --namespace ${NAMESPACE} -q | grep -w ${RELEASE_NAME} > /dev/null 2>&1", returnStatus: true) == 0
                     if (!releaseExists) {
-                        sh "cd game-manager && helm install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}"
+                        sh "cd game-manager && helm upgrade --install ${RELEASE_NAME} ./helm/game-manager --namespace ${NAMESPACE}"
                     } else {
                         echo "Helm release '${RELEASE_NAME}' already exists, skipping installation."
                     }
