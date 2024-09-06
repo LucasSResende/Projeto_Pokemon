@@ -117,7 +117,7 @@ pipeline {
                     }
 
                     def testApp = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${CLUSTER_IP}:${SERVICE_NODE_PORT}/actuator/health", returnStdout: true).trim()
-                    if (testApp != '1') {
+                    if (testApp != '200') {
                         error "Application health check failed with curl. HTTP status code returned: ${testApp}"
                     } else {
                         echo 'Initial application test with curl executed successfully.'
