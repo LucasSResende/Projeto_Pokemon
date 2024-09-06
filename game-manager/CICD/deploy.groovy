@@ -116,7 +116,7 @@ pipeline {
                         error 'SERVICE_NODE_PORT is not defined. Check the "Fetch NodePort" stage.'
                     }
 
-                    def testApp = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${CLUSTER_IP}:${SERVICE_NODE_PORT}/game", returnStdout: true).trim()
+                    def testApp = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${CLUSTER_IP}:${SERVICE_NODE_PORT}/actuator/health", returnStdout: true).trim()
                     if (testApp != '1') {
                         error "Application health check failed with curl. HTTP status code returned: ${testApp}"
                     } else {
