@@ -69,9 +69,8 @@ public class PublisherManagerService {
         }
     }
 
-    @CacheEvict(cacheNames = "publishermanagercache")
+    @CacheEvict(cacheNames = "publishermanagercache", allEntries = true)
     public void deletePublisherCache() {
-        throw new PublisherManagerConnectionException();
     }
 
 }

@@ -1,6 +1,11 @@
-FROM openjdk:17
-
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn clean package -DskipTests
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
 EXPOSE 8081
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} game-manager-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","game-manager-0.0.1-SNAPSHOT.jar"]
+COPY --from=build /app/target/*.jar game-manager.jar
+ENTRYPOINT ["java", "-jar", "game-manager.jar"]

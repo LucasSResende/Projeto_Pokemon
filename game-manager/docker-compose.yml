@@ -1,69 +1,103 @@
 version: '3.9'
-
 services:
   mysql:
-    image: mysql
+    image: mysql:8.0.36
     container_name: mysql
+    restart: unless-stopped
     ports:
       - "3306:3306"
-      - "33060:33060"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=bootdb
     healthcheck:
-      test: "/usr/bin/mysql --user=root --password=root --execute \"SHOW DATABASES;\""
-      interval: 1s
+      test: ["CMD-SHELL", "/usr/bin/mysql --user=root --password=root --execute 'SHOW DATABASES;'"]
+      interval: 3s
       timeout: 3s
       retries: 30
+      start_period: 15s
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - inatel
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: publisherdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d publisherdb"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
     networks:
       - inatel
 
   publisher-manager:
-    image: adautomendes/publisher-manager
+    image: lucassresende/publisher-manager:latest
     container_name: publisher-manager
+    restart: unless-stopped
     ports:
       - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_HOST: publisher-manager
+      SERVER_PORT: "8080"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: publisherdb
+      LOG_LEVEL: INFO
     healthcheck:
-      test: curl --fail http://localhost:8080/publisher || exit 1
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/publisher || exit 1"]
       start_period: 30s
       interval: 5s
       timeout: 5s
-      retries: 10
-    environment:
-      - SERVER_HOST=publisher-manager
-      - SERVER_PORT=8080
-      - MYSQL_HOST=mysql
-      - MYSQL_PORT=3306
-      - SPRING_PROFILES_ACTIVE=prod
+      retries: 15
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - inatel
 
   game-manager:
-    image: game-manager
     build:
-      context: ./
-      dockerfile: ./Dockerfile
-      args:
-        JAR_FILE: target/game-manager-0.0.1-SNAPSHOT.jar
+      context: .
+      dockerfile: Dockerfile
+    image: lucassresende/game-manager:latest
     container_name: game-manager
+    restart: unless-stopped
     ports:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SERVER_HOST=publisher-manager
-      - SERVER_PORT=8080
+      - SERVER_HOST=game-manager
+      - SERVER_PORT=8081
+      - PUBLISHER_MANAGER_HOST=publisher-manager
+      - PUBLISHER_MANAGER_PORT=8080
       - GAME_MANAGER_HOST=game-manager
       - GAME_MANAGER_PORT=8081
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
-    networks:
-      - inatel
     depends_on:
+      mysql:
+        condition: service_healthy
       publisher-manager:
         condition: service_healthy
+    networks:
+      - inatel
+
+volumes:
+  mysql_data:
+  postgres_data:
+
 networks:
   inatel:
     name: inatel
