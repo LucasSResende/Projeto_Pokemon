@@ -21,6 +21,6 @@ public class NotificationListener {
     @EventListener(ApplicationReadyEvent.class)
     public void publisherNotificationManager() {
         NotificationDTO[] notifications = publisherManagerService.sendPublisherManagerNotification();
-        log.info("Notified through: {}", notifications);
+        log.info("Notified through: {}", (Object) notifications);
     }
 }

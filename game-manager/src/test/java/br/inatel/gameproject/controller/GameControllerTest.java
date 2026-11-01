@@ -1,5 +1,6 @@
 package br.inatel.gameproject.controller;
 
+import br.inatel.gameproject.handler.exceptions.GameNotFoundException;
 import br.inatel.gameproject.model.dto.GameDTO;
 import br.inatel.gameproject.service.GameService;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,13 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,10 +37,13 @@ class GameControllerTest {
     private GameService gameService;
 
     private GameDTO gameDTO;
+    private UUID gameId;
 
     @BeforeEach
     public void setup() {
+        gameId = UUID.randomUUID();
         gameDTO = GameDTO.builder()
+                .id(gameId)
                 .publisherId("microsoft")
                 .name("Halo Infinite")
                 .timePlayed(Map.of(
@@ -122,5 +126,81 @@ class GameControllerTest {
                 .andExpect(jsonPath("$.length()").value(0));
 
         verify(gameService).getAllGames(null);
+    }
+
+    @Test
+    @DisplayName("Return game when valid game ID is provided")
+    void givenExistingGameId_whenGetGameByIdIsCalled_thenReturnGame() throws Exception {
+        when(gameService.getGameById(gameId)).thenReturn(gameDTO);
+
+        mockMvc.perform(get("/game/{id}", gameId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Halo Infinite"))
+                .andExpect(jsonPath("$.publisherId").value("microsoft"));
+
+        verify(gameService).getGameById(gameId);
+    }
+
+    @Test
+    @DisplayName("Return 404 when requesting non-existing game ID")
+    void givenNonExistingGameId_whenGetGameByIdIsCalled_thenReturnNotFound() throws Exception {
+        when(gameService.getGameById(gameId)).thenThrow(new GameNotFoundException(gameId));
+
+        mockMvc.perform(get("/game/{id}", gameId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Game was not found."));
+
+        verify(gameService).getGameById(gameId);
+    }
+
+    @Test
+    @DisplayName("Return updated game when valid update is provided")
+    void givenValidUpdate_whenUpdateGameIsCalled_thenReturnUpdatedGame() throws Exception {
+        GameDTO updatedGame = GameDTO.builder()
+                .id(gameId)
+                .publisherId("microsoft")
+                .name("Halo Infinite Updated")
+                .build();
+
+        when(gameService.updateGame(eq(gameId), any(GameDTO.class))).thenReturn(updatedGame);
+
+        mockMvc.perform(put("/game/{id}", gameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "publisherId": "microsoft",
+                                  "name": "Halo Infinite Updated"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Halo Infinite Updated"))
+                .andExpect(jsonPath("$.publisherId").value("microsoft"));
+
+        verify(gameService).updateGame(eq(gameId), any(GameDTO.class));
+    }
+
+    @Test
+    @DisplayName("Return 204 No Content when game is successfully deleted")
+    void givenValidGameId_whenDeleteGameIsCalled_thenReturnNoContent() throws Exception {
+        doNothing().when(gameService).deleteGame(gameId);
+
+        mockMvc.perform(delete("/game/{id}", gameId))
+                .andExpect(status().isNoContent());
+
+        verify(gameService).deleteGame(gameId);
+    }
+
+    @Test
+    @DisplayName("Return 404 when deleting a non-existing game")
+    void givenNonExistingGameId_whenDeleteGameIsCalled_thenReturnNotFound() throws Exception {
+        doThrow(new GameNotFoundException(gameId)).when(gameService).deleteGame(gameId);
+
+        mockMvc.perform(delete("/game/{id}", gameId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Game was not found."));
+
+        verify(gameService).deleteGame(gameId);
     }
 }

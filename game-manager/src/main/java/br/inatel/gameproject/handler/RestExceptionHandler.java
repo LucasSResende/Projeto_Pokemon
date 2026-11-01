@@ -1,5 +1,6 @@
 package br.inatel.gameproject.handler;
 
+import br.inatel.gameproject.handler.exceptions.GameNotFoundException;
 import br.inatel.gameproject.handler.exceptions.PublisherManagerConnectionException;
 import br.inatel.gameproject.handler.exceptions.PublisherNotFoundException;
 import org.hibernate.exception.JDBCConnectionException;
@@ -14,6 +15,7 @@ import java.net.URI;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -25,11 +27,21 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(PublisherNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handlerPublisherNotFoundException(PublisherNotFoundException e) {
         ProblemDetail error = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         error.setTitle("PublisherId was not found.");
         error.setType(URI.create("PublisherNotFoundException"));
+        error.setStatus(HttpStatus.BAD_REQUEST);
+        return error;
+    }
+
+    @ExceptionHandler(GameNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handlerGameNotFoundException(GameNotFoundException e) {
+        ProblemDetail error = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        error.setTitle("Game was not found.");
+        error.setType(URI.create("GameNotFoundException"));
         error.setStatus(HttpStatus.NOT_FOUND);
         return error;
     }
@@ -49,7 +61,7 @@ public class RestExceptionHandler {
     public ProblemDetail handlerWithPublisherConnectionException(PublisherManagerConnectionException e) {
         ProblemDetail error = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
         error.setTitle("PublisherManager Connection Failed");
-        error.setType(URI.create("JDBCConnectionException"));
+        error.setType(URI.create("PublisherManagerConnectionException"));
         error.setStatus(HttpStatus.SERVICE_UNAVAILABLE);
         return error;
     }

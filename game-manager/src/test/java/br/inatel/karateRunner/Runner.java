@@ -12,4 +12,14 @@ public class Runner {
     Karate testGet() {
         return Karate.run("classpath:karateTests/features/GetGame.feature").relativeTo(getClass());
     }
+
+    @Karate.Test
+    Karate testPut() {
+        return Karate.run("classpath:karateTests/features/PutGame.feature").relativeTo(getClass());
+    }
+
+    @Karate.Test
+    Karate testDelete() {
+        return Karate.run("classpath:karateTests/features/DeleteGame.feature").relativeTo(getClass());
+    }
 }

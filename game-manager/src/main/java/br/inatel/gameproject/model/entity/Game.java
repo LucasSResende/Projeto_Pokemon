@@ -15,7 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Builder
-
 public class Game {
 
     @Id
@@ -24,6 +23,7 @@ public class Game {
     private String publisherId;
     private String name;
 
+    @Builder.Default
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimePlayed> timePlayed = new ArrayList<>();
 

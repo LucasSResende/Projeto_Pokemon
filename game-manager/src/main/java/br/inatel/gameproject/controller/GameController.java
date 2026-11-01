@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("game")
@@ -25,8 +26,24 @@ public class GameController {
         return ResponseEntity.ok(gameService.getAllGames(publisherId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<GameDTO> getGameById(@PathVariable UUID id) {
+        return ResponseEntity.ok(gameService.getGameById(id));
+    }
+
     @PostMapping
     public ResponseEntity<GameDTO> createGame(@Valid @RequestBody GameDTO gameDTO) {
         return new ResponseEntity<>(gameService.createGame(gameDTO), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<GameDTO> updateGame(@PathVariable UUID id, @Valid @RequestBody GameDTO gameDTO) {
+        return ResponseEntity.ok(gameService.updateGame(id, gameDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGame(@PathVariable UUID id) {
+        gameService.deleteGame(id);
+        return ResponseEntity.noContent().build();
     }
 }

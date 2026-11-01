@@ -16,159 +16,62 @@ You need to install the following technology:
 ## About the Project
 
 This is the first IDP project with closed scope. The project consists of a game manager,
-in which the user can save and list games. The target audience for this project is all
-users who like games and want to better manager their time played.
+in which the user can save, list, update and delete games. The target audience for this project is all
+users who like games and want to better manage their time played.
 
-In this project I used the  [Mysql](https://hub.docker.com/_/mysql)
-and [adautomendes/publisher-manager](https://hub.docker.com/r/adautomendes/publisher-manager) images,
-knowledge acquired about Java, Spring Boot, kubernetes, Helm, Jenkins and more.
----
-
-## Diagrams
-
-1. The following operation diagram shows the macro vision of distribution of the microservices
-
-<h1 align="center">
-    <img align="center" src="modeling/OperationDiagram-Operation_Diagram.png" width="500px"/>
-</h1> 
-The user can perform three operations: 
-
-- Read all games in database, following the next sequence diagram:
-
-<h1 align="center">
-    <img align="center" src="modeling/SequenceDiagramGetAll.png" width="500px"/>
-</h1>
-~~~~~~~~
-- Read only games specified by publisherId, following the next sequence diagram:
-
-<h1 align="center">
-    <img align="center" src="modeling/SequenceDiagramGetByPublisher.png" width="500px"/>
-</h1>
-
-- Save a new game in database, following the next sequence diagram:
-
-<h1 align="center">
-    <img align="center" src="modeling/SequenceDiagramPost.png" width="500px"/>
-</h1>
+In this project I used the [MySQL](https://hub.docker.com/_/mysql)
+and [Publisher Manager](https://hub.docker.com/r/lucassresende/publisher-manager) microservices,
+knowledge acquired about Java, Spring Boot, Kubernetes, Helm, Jenkins and more.
 
 ---
 
-## Technologies
+## End-Points (Game Manager - Port 8081)
 
-What I used to development the project:</p>
+### 1. Read all games:
+`GET http://localhost:8081/game`
 
-<div align="left">
+### 2. Read games by publisherId:
+`GET http://localhost:8081/game?publisherId={publisherId}`
 
-![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
-![Intellij](https://img.shields.io/badge/IntelliJ_IDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
-![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white)
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot)
-![Maven](https://img.shields.io/badge/apache_maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-![Junit](https://img.shields.io/badge/Junit5-25A162?style=for-the-badge&logo=junit5&logoColor=white)
-![Karate](game-manager/imgkarate.png)
-![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-3069DE?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Helm](https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=Helm&labelColor=0F1689)
-![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white)
+### 3. Read game by id:
+`GET http://localhost:8081/game/{id}`
 
+### 4. Register a new game:
+`POST http://localhost:8081/game`
 
-</div>
-
----
-
-## Project
-
-<h3> Running the application:</h3>
-Use the following command to clone the project:
-
-```bash
-$ https://github.com/LucasSResende/Project1_IDP.git
-```
-
-To build the project, use this command:
-
-```bash
-$ mvn clean install -DskipTests
-```
-
-Then enter the Ubuntu terminal, in the same directory where the pom file is present.
-And start the application container with the following command:
-
-```bash
-$ docker-compose up --build
-```
-
----
-
-# End-Points
-
-Endpoints of port 8081 (Game Manager)
-
-To read all games:
-`GET  http://localhost:8081/game`
-
-To read games by publisherId:
-`GET  http://localhost:8081/game?publisherId={publisherId}`
-
-It is necessary to use a valid publisherId in the URL;
-
-To register a new timePlayed with games:
-`POST  http://localhost:8081/game`
-
--The input payload for creating a timePlayed with games needs to follow these example:
-
-```bash
+Payload example:
+```json
 {
     "publisherId": "nintendo",
     "name": "Mario",
-    "timePlayed":
-        {
-            "2023-05-01": 10,
-            "2023-05-02": 2,
-            "2023-05-03": 3,
-            "2023-05-04": 4
-        }
+    "timePlayed": {
+        "2023-05-01": 10,
+        "2023-05-02": 2
+    }
 }
 ```
 
-After save game, an output will be return following these example:
+### 5. Update an existing game (NEW):
+`PUT http://localhost:8081/game/{id}`
 
-```bash
+Payload example:
+```json
 {
-    "id": "004ce1bf-951d-4193-b9fe-6bfdbe58544a"
     "publisherId": "nintendo",
-    "name": "Mario",
-    "timePlayed":
-        {
-            "2023-05-01": 10,
-            "2023-05-02": 2,
-            "2023-05-03": 3,
-            "2023-05-04": 4
-        }
+    "name": "Super Mario Odyssey",
+    "timePlayed": {
+        "2023-05-01": 15,
+        "2023-05-02": 5
+    }
 }
 ```
+Returns `200 OK` with the updated game, or `404 Not Found` if id does not exist.
 
-To clean cache:
-`DELETE  http://localhost:8081/publishermanagercache`
+### 6. Delete a game (NEW):
+`DELETE http://localhost:8081/game/{id}`
 
-To clean the cache of my application, an API call
-is made automatically by the external API when a publisher is created.
+Returns `204 No Content` on success, or `404 Not Found` if id does not exist.
 
-Endpoints of port 8080 (Publisher Manager)
-
-To read all publishers:
-`GET  http://localhost:8080/publisher`
-
-To register a new publisher:
-`POST  http://localhost:8080/publisher`
-
-The payload for creating a publisher follows the example:
-
-```bash
-{
-  "id": "microsoft",
-  "name": "Microsotf company"
-}
-```
+### 7. Clean cache (Downstream callback):
+`DELETE http://localhost:8081/publishercache` (or `/publishermanagercache`)
+Automatically triggered by Publisher Manager whenever a publisher is added, updated, or removed.
